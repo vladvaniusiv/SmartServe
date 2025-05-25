@@ -24,6 +24,11 @@ export class WelcomeComponent {
     }
   }
 
+getLogoUrl(): string {
+  const base = window.location.pathname.includes('github.io') ? '/SmartServe/' : '';
+  return `${base}assets/images/SmartServe/logo.png`;
+}
+
   navigateToRegister() {
     this.router.navigate(['/register']);
   }

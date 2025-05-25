@@ -157,7 +157,7 @@ getCategoryIcon(catId: number): string | null {
   // Modificar getCartIconPath()
   getCartIconPath(): string {
     //return this.getImageUrl(`cart/${this.cartIcon}`);
-    return `${environment.baseHref}assets/images/cart/cart.png`;
+    return `/SmartServe/assets/images/cart/cart.png`;
   }
 
   get filteredAndSortedDishes() {

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script>
-  const segment = 1;
-  const redirect = location.pathname.split("/")[segment];
-  sessionStorage.redirect = redirect ? `/${redirect}` : "";
-  location.href = "/SmartServe/";
+  const fullPath = location.pathname.split("/SmartServe/")[1] || "";
+  sessionStorage.redirect = `${fullPath}${location.search}${location.hash}`;
+  location.replace("/SmartServe/");
 </script>

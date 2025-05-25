@@ -22,8 +22,6 @@ export class NavbarComponent {
       //return `${this.logo}`;
       //return this.logo ? `/assets/images/menus/logos/${this.logo}` : '';
       if (!this.logo) return '';
-        return this.logo 
-      ? `${environment.baseHref}assets/images/menus/logos/${this.logo}`
-      : '';
+      return `${environment.baseHref}assets/images/menus/logos/${this.logo}`;
     }
 }

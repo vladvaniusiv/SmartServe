@@ -1,5 +1,6 @@
 import { Component,Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -21,8 +22,8 @@ export class NavbarComponent {
       //return `${this.logo}`;
       //return this.logo ? `/assets/images/menus/logos/${this.logo}` : '';
       if (!this.logo) return '';
-      // Eliminar posible prefijo de ruta
-      const cleanLogo = this.logo.replace('logos/', '');
-      return `/assets/images/menus/logos/${cleanLogo}`;
+        return this.logo 
+      ? `${environment.baseHref}assets/images/menus/logos/${this.logo}`
+      : '';
     }
 }

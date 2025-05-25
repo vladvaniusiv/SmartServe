@@ -1,5 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-footer',
@@ -24,7 +25,7 @@ export class FooterComponent {
   // Cambiar método getSocialIconUrl
   getSocialIconUrl(icon: string): string {
     //return `/assets/images/menus/social_icons/${icon}`;
-    const cleanIcon = icon.replace('social_icons/', '');
-    return `/assets/images/menus/social_icons/${cleanIcon}`;
+    return `${environment.baseHref}assets/images/menus/social_icons/${icon}`;
+
   }
 }

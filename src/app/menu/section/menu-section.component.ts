@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../navbar-menu/navbar-menu.component';
 import { FooterComponent } from '../footer/footer.component';
-import { environment } from '../../../environments/environment.development';
+import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { TruncatePipe } from '../../pipes/truncate.pipe';
 import { ViewEncapsulation } from '@angular/core';
@@ -127,9 +127,8 @@ export class MenuSectionComponent {
     //if (!path) return '';
     //return `/assets/images/platos/${path}`;
     if (!path) return '';
-    // Eliminar 'platos/' del path si existe
-    const cleanPath = path.replace('platos/', '');
-    return `/assets/images/platos/${cleanPath}`;
+
+    return `${environment.baseHref}assets/images/platos/${path}`;
   }
 
   getCategoryName(catId: number): string {
@@ -140,8 +139,9 @@ export class MenuSectionComponent {
 getCategoryIcon(catId: number): string | null {
   const cat = this.categories.find(c => c.id === catId);
   //return cat && cat.icono_url ? cat.icono_url : null;
-  return cat?.icono ? `/assets/images/categorias/${cat.icono}` : null;
-
+  return cat?.icono 
+      ? `${environment.baseHref}assets/images/categorias/${cat.icono}`
+      : null;
 }
 
   // Modificar processDishes()

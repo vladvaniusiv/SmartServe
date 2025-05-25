@@ -1,5 +1,5 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8000/api/',
-  baseHref: '/SmartServe/'
+  apiUrl: 'http://localhost/DWES/ProyectoFinal/Frontend/public/api/',
+  baseHref: '/'
 };

@@ -128,7 +128,7 @@ export class MenuSectionComponent {
     //return `/assets/images/platos/${path}`;
     if (!path) return '';
 
-    return `${environment.baseHref}assets/images/platos/${path}`;
+    return `${environment.baseHref}assets/images/platos/${path.replace('platos/', '')}`;
   }
 
   getCategoryName(catId: number): string {
@@ -157,7 +157,7 @@ getCategoryIcon(catId: number): string | null {
   // Modificar getCartIconPath()
   getCartIconPath(): string {
     //return this.getImageUrl(`cart/${this.cartIcon}`);
-    return '/assets/images/cart/cart.png';
+    return `${environment.baseHref}assets/images/cart/cart.png`;
   }
 
   get filteredAndSortedDishes() {

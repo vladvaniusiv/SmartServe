@@ -4,6 +4,7 @@ import { MenuSectionComponent } from '../section/menu-section.component';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-show',
@@ -72,9 +73,9 @@ export class ShowMenuComponent implements OnInit {
       menu: this.http.get<any>(`${this.apiUrl}menus/menu_${this.menuId}.json`),
       platos: this.http.get<any[]>(`${this.apiUrl}platos.json`), 
       categorias: this.http.get<any[]>(`${this.apiUrl}categorias.json`) */
-      menu: this.http.get<any>(`/assets/data/menus/menu_${this.menuId}.json`),
-      platos: this.http.get<any[]>('/assets/data/platos.json'),
-      categorias: this.http.get<any[]>('/assets/data/categorias.json')
+      menu: this.http.get<any>(`${environment.baseHref}assets/data/menus/menu_${this.menuId}.json`),
+      platos: this.http.get<any[]>(`${environment.baseHref}assets/data/platos.json`),
+      categorias: this.http.get<any[]>(`${environment.baseHref}assets/data/categorias.json`)
     }).subscribe({
       next: ({ menu, platos, categorias }) => {
         this.processStaticData(menu, platos);

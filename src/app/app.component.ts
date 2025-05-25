@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { UserService } from './services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +8,15 @@ import { Component } from '@angular/core';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'pt3';
+  title = 'SmartServe';
+  nombre = 'Vladyslav'
+  apellidos = 'Vaniusiv'
+  retornarNombreApellidos(){
+    return this.nombre + ' ' + this.apellidos;
+  }
+  constructor(private userService: UserService) {}
+
+ngOnInit() {
+  this.userService.loadUserFromLocalStorage();
+}
 }

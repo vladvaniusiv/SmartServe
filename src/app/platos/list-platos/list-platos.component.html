@@ -1,0 +1,65 @@
+<div class="container">
+    <br><br><br>
+    <h2>Listado de Platos</h2>
+  
+    <!-- Filtros -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <input type="text" class="form-control" placeholder="Buscar platos..." 
+               [(ngModel)]="searchTerm" (input)="filterPlatos()">
+      </div>
+      <div class="col-md-6">
+        <select class="form-select" [(ngModel)]="categoriaFilter" (change)="filterPlatos()">
+          <option value="">Todas las categorías</option>
+          <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+        </select>
+      </div>
+    </div>
+  
+    <!-- Tabla de platos -->
+    <div class="table-responsive">
+      <table class="table table-striped table-hover" *ngIf="filteredPlatos.length > 0">
+        <thead class="table-dark">
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Precio</th>
+            <th>Categoría</th>
+            <th>Disponible</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let plato of filteredPlatos">
+            <td>{{ plato.nombre }}</td>
+            <td>{{ plato.descripcion | truncate:50 }}</td>
+            <td>{{ plato.precio | currency:'EUR':'symbol':'1.2-2' }}</td>
+            <td>{{ getCategoriaNombre(plato.categoria_id) }}</td>
+            <td>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" 
+                       [(ngModel)]="plato.disponible" 
+                       (change)="updateDisponibilidad(plato)">
+              </div>
+            </td>
+            <td>
+              <a [routerLink]="['/platos/editar', plato.id]" class="btn btn-primary btn-sm me-2">
+                <i class="bi bi-pencil"></i> Editar
+              </a>
+              <button class="btn btn-danger btn-sm" (click)="deletePlato(plato.id)">
+                <i class="bi bi-trash"></i> Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+  
+      <div *ngIf="filteredPlatos.length === 0" class="alert alert-info">
+        No se encontraron platos con los filtros aplicados.
+      </div>
+    </div>
+  
+    <!-- Mensajes de éxito/error -->
+    <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+  </div>

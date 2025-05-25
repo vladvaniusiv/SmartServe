@@ -1,0 +1,23 @@
+<div class="container">
+  <br><br><br>
+    <h2>Lista de Personal</h2>
+    <table *ngIf="personalList.length > 0" class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo Electrónico</th>
+          <th>Teléfono</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of personalList">
+          <td>{{ user.name }}</td>
+          <td>{{ user.email }}</td>
+          <td>{{ user.phone_number }}</td>
+          <button class="btn btn-danger" (click)="deleteUser(user.id)">Eliminar</button>
+        </tr>
+      </tbody>
+    </table>
+    <p *ngIf="personalList.length === 0">No hay personal registrado aún.</p>
+  </div>
+  

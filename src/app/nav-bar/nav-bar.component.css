@@ -1,0 +1,46 @@
+.navbar-nav .nav-item {
+    position: relative;
+  }
+  
+  .navbar-nav .has-submenu:hover .submenu,
+  .navbar-nav .has-submenu:focus-within .submenu {
+    display: block;
+  }
+  
+  .navbar-nav .submenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #ffffff;
+    color: #000;
+    min-width: 160px;
+    border-radius: 6px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    padding: 0;
+    z-index: 1000;
+  }
+  
+  .navbar-nav .submenu li {
+    list-style: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  
+  .navbar-nav .submenu li:hover {
+    background-color: #f0f0f0;
+    border-radius: 6px;
+  }
+  
+  .navbar-nav .nav-link {
+    color: #fff;
+    cursor: pointer;
+    padding: 10px 15px;
+    transition: background 0.2s ease-in-out;
+  }
+  
+  .navbar-nav .nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+  }

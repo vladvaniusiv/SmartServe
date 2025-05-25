@@ -1,0 +1,54 @@
+<div class="container py-5">
+  <br>
+  <div class="card">
+    <div class="card-body">
+     
+      <h2 class="mb-4">Pago</h2>
+      <p>Estimado <strong>{{ name }}</strong>, nos alegra que escogiste SmartServe.</p>
+      <label class="form-label d-block mt-3">
+        <input type="checkbox" [(ngModel)]="requires_training" (change)="updatePrice()" name="requires_training" class="form-check-input me-2"> 
+        Necesito formación (+50€)
+      </label>
+      <label class="form-label d-block mt-3">
+        <label class="form-label d-block mt-3">Número de empleados</label>
+        <input type="number" [(ngModel)]="staff_count" (input)="updatePrice()" min="0" class="form-control">
+      </label>
+
+      <h3>Total: €{{ totalPrice }}</h3>
+
+      <div>
+        <h3>Método de Pago</h3>
+        
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="paymentMethod" [(ngModel)]="selectedPaymentMethod" value="bank" id="bankRadio">
+          <label class="form-check-label" for="bankRadio">Transferencia Bancaria</label>
+        </div>
+        
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="paymentMethod" [(ngModel)]="selectedPaymentMethod" value="bizum" id="bizumRadio">
+          <label class="form-check-label" for="bizumRadio">Bizum</label>
+        </div>
+
+        <div *ngIf="selectedPaymentMethod === 'bank'" class="mb-3">
+          <h4>Datos Bancarios</h4>
+          <div class="mb-3">
+            <input type="text" placeholder="IBAN" [(ngModel)]="iban" (blur)="validateIBAN()" name="iban" class="form-control">
+            <p class="text-danger mt-2" *ngIf="ibanError">{{ ibanError }}</p>
+          </div>
+
+          <div class="mb-3">
+            <input type="text" placeholder="Nombre del Titular" [(ngModel)]="accountHolder" (blur)="validateAccountHolder()" name="accountHolder" class="form-control">
+            <p class="text-danger mt-2" *ngIf="accountHolderError">{{ accountHolderError }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="selectedPaymentMethod === 'bizum'" class="mb-3">
+          <h4>Pago con Bizum</h4>
+          <input type="text" [value]="phone_number" name="phone_number" class="form-control">
+        </div>
+      </div>
+
+      <button class="btn btn-primary mt-4" (click)="submitPayment()">Pagar</button>
+    </div>
+  </div>
+</div>

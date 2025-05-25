@@ -1,0 +1,56 @@
+<div class="container">
+  <br><br><br>
+  <h2>Editar Categoría</h2>
+
+  <form (submit)="saveCategoria(); $event.preventDefault()" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label class="form-label">Nombre*</label>
+      <input type="text" class="form-control" [(ngModel)]="categoria.nombre" name="nombre" required>
+      <div *ngIf="errorMessage && errorMessage.includes('nombre')" class="text-danger">
+        {{ errorMessage }}
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Descripción</label>
+      <textarea class="form-control" [(ngModel)]="categoria.descripcion" name="descripcion"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Ícono actual</label>
+      <div *ngIf="categoria.icono">
+        <img [src]="getIconoUrl(categoria.icono)" alt="Icono actual" style="max-width: 100px;" class="mb-2 d-block">
+      </div>
+      
+      <label class="form-label">Nuevo ícono</label>
+      <input type="file" class="form-control" (change)="onFileSelected($event)" accept="image/*" name="icono">
+      <small class="text-muted">Formatos aceptados: JPEG, PNG, JPG, GIF, SVG. Máx. 2MB</small>
+      <div *ngIf="errorMessage && errorMessage.includes('icono')" class="text-danger">
+        {{ errorMessage }}
+      </div>
+      
+      <div *ngIf="newIconoPreview" class="mt-2">
+        <img [src]="newIconoPreview" alt="Vista previa" style="max-width: 100px;">
+      </div>
+      
+      <div class="form-check mt-3" *ngIf="categoria.icono">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="deleteIcono" id="deleteIcono" name="deleteIcono">
+        <label class="form-check-label" for="deleteIcono">Eliminar ícono actual</label>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      <button type="button" class="btn btn-secondary" (click)="cancel()">Cancelar</button>
+      <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+        <span *ngIf="!isLoading">Guardar cambios</span>
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
+      </button>
+    </div>
+  </form>
+
+  <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+  <div *ngIf="errorMessage && !errorMessage.includes('nombre') && !errorMessage.includes('icono')" 
+       class="alert alert-danger mt-3">
+    {{ errorMessage }}
+  </div>
+</div>

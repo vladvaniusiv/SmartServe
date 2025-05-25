@@ -1,0 +1,19 @@
+<div>
+    <br><br><br>
+  <!-- SECCIÓN DE MENÚ -->
+  <div class="container">
+  <app-menu-section
+    [config]="menu.config"
+    [sectionTitle]="currentSection | titlecase"
+    [restaurantName]="user.company_name"
+    [logo]="logoPreviewUrl"
+    [description]="menu.config.description"
+    [sectionType]="currentSection"
+    [allSections]="menuSections"
+    [categories]="categorias"
+    [apiUrl]="apiUrl"
+    [sectionDishes]="menuSections[currentSection] || []"
+    (sectionChanged)="onSectionChanged($event)">
+  </app-menu-section>
+  </div>
+</div>

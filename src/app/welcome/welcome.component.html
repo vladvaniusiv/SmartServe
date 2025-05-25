@@ -1,0 +1,77 @@
+<div class="container-fluid d-flex align-items-start">
+  <!-- Logo a la izquierda -->
+  <div style="margin-top: 70px;">
+    <img src="logo.png" width="100" alt="logo">
+  </div>
+
+  <!-- Contenido principal centrado -->
+  <div class="flex-fill text-center">
+    <!-- Si el usuario NO está autenticado -->
+    <div *ngIf="!user" class="d-flex flex-column align-items-center justify-content-center">
+      <h2 class="mb-4"  style="margin-top: 70px;">Bienvenido a SmartServe</h2>
+      <button class="btn btn-success mb-2" (click)="navigateToRegister()">Registrarse</button>
+      <button class="btn btn-success" (click)="navigateToLogin()">Iniciar Sesión</button>
+    </div>
+
+    <!-- Si el usuario SÍ está autenticado -->
+    <div *ngIf="user">
+      <h2 class="mb-4"  style="margin-top: 70px;">Bienvenido, {{ user.name }}</h2>
+
+      <div class="row justify-content-center g-3">
+        <!-- Modificar cuenta (visible para admin o personal) -->
+        <div class="col-12 col-md-4" *ngIf="user?.role === 'admin' || user?.role === 'personal'">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Cuenta</h5>
+              <button class="btn btn-success w-100" (click)="goToUpdateUser()">Modificar cuenta</button>
+            </div>
+          </div>
+        </div>
+
+      <!-- Menú: Mostrar solo Crear para admin -->
+      <div class="col-12 col-md-4" *ngIf="user?.role === 'admin'">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Menú</h5>
+            <button class="btn btn-success mb-2 w-100" (click)="goToCreateMenu()">Crear Menú</button>
+            <button class="btn btn-success w-100" (click)="goToListMenus()">Listar Menús</button>
+          </div>
+        </div>
+      </div>
+
+        <!-- Grupo: Personal (solo admin) -->
+        <div class="col-12 col-md-4" *ngIf="user?.role === 'admin'">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Personal</h5>
+              <button class="btn btn-success mb-2 w-100" (click)="goToCreateUser()">Dar de alta Personal</button>
+              <button class="btn btn-success w-100" (click)="goToListPersonal()">Lista de Personal</button>
+            </div>
+          </div>
+        </div>
+
+      <!-- Categorías: también para personal -->
+      <div class="col-12 col-md-4" *ngIf="user?.role === 'admin' || user?.role === 'personal'">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title">Categorías</h5>
+            <button class="btn btn-success mb-2 w-100" (click)="goToCreateCategory()">Crear Categoría</button>
+            <button class="btn btn-success w-100" (click)="goToListCategory()">Listar Categorías</button>
+          </div>
+        </div>
+      </div>
+
+        <!-- Platos: también para personal -->
+        <div class="col-12 col-md-4" *ngIf="user?.role === 'admin' || user?.role === 'personal'">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title">Platos</h5>
+              <button class="btn btn-success mb-2 w-100" (click)="goToCreateDishes()">Crear Plato</button>
+              <button class="btn btn-success w-100" (click)="goToListPlatos()">Listar Platos</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

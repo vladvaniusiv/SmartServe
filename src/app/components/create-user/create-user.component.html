@@ -1,0 +1,32 @@
+<div class="container pt-4" *ngIf="user">
+  <br><br>
+  <h2 class="mb-4">Registrar Nuevo Personal</h2>
+  <form (submit)="createUser($event)">
+    <div class="mb-3">
+      <input type="text" class="form-control" placeholder="Nombre" [(ngModel)]="user.name" name="name" required>
+    </div>
+
+    <div class="mb-3">
+      <input type="email" class="form-control" placeholder="Correo electrónico" [(ngModel)]="user.email" name="email" required>
+    </div>
+
+    <div class="mb-3">
+      <input type="password" class="form-control" placeholder="Contraseña" [(ngModel)]="user.password" name="password" required>
+    </div>
+
+    <div class="mb-3">
+      <input type="text" class="form-control" placeholder="Número de teléfono" [(ngModel)]="user.phone_number" name="phone_number" required>
+    </div>
+
+    <div class="mb-3">
+      <input type="text" class="form-control" [(ngModel)]="user.company_name" name="company_name" disabled>
+    </div>
+
+    <div class="text-danger mb-2" *ngIf="registrationError">{{ registrationError }}</div>
+
+    <div class="mb-3">
+      <button type="button" *ngIf="showUpgradeLink" class="btn btn-warning me-2" (click)="goToUpdateUser()">Aumentar el número de empleados</button>
+      <button type="submit" class="btn btn-primary">Crear Usuario</button>
+    </div>
+  </form>
+</div>

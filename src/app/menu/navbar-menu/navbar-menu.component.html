@@ -1,0 +1,13 @@
+<nav [ngClass]="themeClass" class="navbar navbar-expand-lg border-bottom p-3 d-flex flex-column align-items-center text-center">
+  <!-- Logo -->
+  <div *ngIf="getLogoUrl()" class="mb-2">
+    <img [src]="getLogoUrl()" alt="Logo del restaurante" height="50">
+  </div>
+
+  <!-- Nombre del restaurante -->
+  <h1 class="fs-3 fw-bold mb-1">{{ restaurantName }}</h1>
+
+  <!-- Descripción -->
+  <p class="mb-3">{{ description }}</p>
+
+</nav>

@@ -1,0 +1,75 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-success position-fixed w-100 z-1">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">SmartServe</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarsExample02">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <!-- Si no hay usuario -->
+        <ng-container *ngIf="!user">
+          <li class="nav-item">
+            <span class="nav-link" (click)="navigateToRegister()">Registrarse</span>
+          </li>
+          <li class="nav-item">
+            <span class="nav-link" (click)="navigateToLogin()">Iniciar Sesión</span>
+          </li>
+        </ng-container>
+
+        <!-- Si hay usuario autenticado -->
+        <ng-container *ngIf="user">
+
+          <li class="nav-item" *ngIf="user?.role === 'admin' || user?.role === 'personal'">
+            <span class="nav-link" (click)="goToUpdateUser()">Modificar cuenta</span>
+          </li>
+
+          <!-- Menús con submenús -->
+          <li class="nav-item has-submenu" *ngIf="user?.role === 'admin'">
+            <span class="nav-link" (click)="goToListPersonal()">Personal</span>
+            <ul class="submenu">
+              <li (click)="goToCreateUser()">Dar de alta</li>
+              <li (click)="goToListPersonal()">Listar</li>
+            </ul>
+          </li>
+
+          <!-- Categorías (admin o personal) -->
+          <li class="nav-item has-submenu" *ngIf="user?.role === 'admin' || user?.role === 'personal'">
+            <span class="nav-link" (click)="goToListCategory()">Categorías</span>
+            <ul class="submenu">
+              <li *ngIf="user?.role === 'admin' || user?.role === 'personal'" (click)="goToCreateCategory()">Crear</li>
+              <li (click)="goToListCategory()">Listar</li>
+            </ul>
+          </li>
+
+          <!-- Platos (admin o personal) -->
+          <li class="nav-item has-submenu" *ngIf="user?.role === 'admin' || user?.role === 'personal'">
+            <span class="nav-link" (click)="goToListPlatos()">Platos</span>
+            <ul class="submenu">
+              <li *ngIf="user?.role === 'admin' || user?.role === 'personal'" (click)="goToCreateDishes()">Crear</li>
+              <li (click)="goToListPlatos()">Listar</li>
+            </ul>
+          </li>
+
+          <!-- Menús -->
+          <li class="nav-item has-submenu" *ngIf="user?.role === 'admin'">
+            <span class="nav-link" (click)="goToListMenus()">Menús</span>
+            <ul class="submenu">
+              <li *ngIf="user?.role === 'admin'" (click)="goToCreateMenu()">Crear</li>
+              <li (click)="goToListMenus()">Listar</li>
+            </ul>
+          </li>
+
+          <li class="nav-item" *ngIf="user?.role === 'admin' || user?.role === 'personal'">
+            <span class="nav-link" (click)="goToPedidos()">Pedidos</span>
+          </li>
+
+        </ng-container>
+      </ul>
+      
+      <button class="btn btn-primary me-2" (click)="return()">Volver</button>
+      <button *ngIf="user" class="btn btn-danger" (click)="logout()">Logout</button>
+    </div>
+  </div>
+</nav>

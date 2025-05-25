@@ -1,0 +1,37 @@
+<div class="container">
+    <br><br><br>
+    <h2>Lista de Categorías</h2>
+    
+    <table *ngIf="categorias.length > 0" class="table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Ícono</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let categoria of categorias">
+          <td>{{ categoria.nombre }}</td>
+          <td>{{ categoria.descripcion }}</td>
+          <td>
+            <img *ngIf="categoria.icono" 
+                 [src]="getIconoUrl(categoria.icono)" 
+                 alt="Icono de categoría" 
+                 style="max-width: 100px; height: auto;">
+            <span *ngIf="!categoria.icono">Sin ícono</span>
+          </td>
+          <td>
+            <button class="btn btn-danger" (click)="deleteCategoria(categoria.id)">Eliminar</button>
+            <button class="btn btn-primary" (click)="editCategoria(categoria.id)">Editar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <p *ngIf="categorias.length === 0">No hay categorías creadas aún.</p>
+    
+    <p class="mt-3 text-success" *ngIf="successMessage">{{ successMessage }}</p>
+    <p class="mt-3 text-danger" *ngIf="errorMessage">{{ errorMessage }}</p>
+  </div>

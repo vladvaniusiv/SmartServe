@@ -1,0 +1,43 @@
+<div class="container">
+  <br><br><br>
+  <h2 class="mb-4">Gestión de Pedidos</h2>
+
+  <table class="table table-bordered table-hover table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>Mesa</th>
+        <th>Platos</th>
+        <th>Precio (€)</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let pedido of pedidos">
+        <td>{{ pedido.id }}</td>
+        <td>{{ pedido.mesa }}</td>
+        <td>
+          <ul class="list-unstyled">
+            <li *ngFor="let plato of pedido.platos">
+              <strong></strong> {{ plato.nombre }}, <strong>Cant:</strong> {{ plato.cantidad }}
+            </li>
+          </ul>
+        </td>
+        <td>{{ pedido.total | number:'1.2-2' }}</td>
+        <td>
+          <select class="form-select" [(ngModel)]="pedido.estado" (change)="actualizarEstado(pedido)">
+            <option *ngFor="let estado of estadosDisponibles" [value]="estado">{{ estado }}</option>
+          </select>
+        </td>
+        <td>
+          <button class="btn btn-danger btn-sm"
+                  (click)="eliminarPedido(pedido.id, pedido.estado)"
+                  [disabled]="pedido.estado !== 'entregado' && pedido.estado !== 'cancelado'">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

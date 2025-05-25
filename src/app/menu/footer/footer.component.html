@@ -1,0 +1,28 @@
+<footer class="footer p-4 mt-4 border-top">
+  <div class="row">
+    <div class="col-md-6">
+      <p><strong>Ubicación:</strong> {{ location }}</p>
+      <p><strong>WiFi:</strong> {{ wifiPassword }}</p>
+    </div>
+
+    <div class="col-md-6 text-md-end">
+      <div class="d-flex justify-content-end gap-3 flex-wrap">
+        <a *ngFor="let social of socialLinks" 
+           [href]="social.url" 
+           target="_blank" 
+           class="text-decoration-none social-icon"
+           [title]="social.name">
+          <img *ngIf="social.icon" 
+              [src]="getSocialIconUrl(social.icon)"                
+              [alt]="social.name"
+               class="social-icon-img"
+               width="40px">
+          <span *ngIf="!social.icon">{{ social.name }}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  <p class="text-center mt-3 small">
+    © 2025 {{ restaurantName }} por SmartServe
+  </p>
+</footer>

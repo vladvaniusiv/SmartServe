@@ -1,0 +1,127 @@
+<div class="container">
+  <br><br><br>
+  <h2>Editar Plato</h2>
+  
+  <form (submit)="submitDish(); $event.preventDefault()" enctype="multipart/form-data">
+    <div class="mb-3">
+      <label class="form-label">Nombre*</label>
+      <input type="text" class="form-control" [(ngModel)]="dish.nombre" name="nombre" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Descripción</label>
+      <textarea class="form-control" [(ngModel)]="dish.descripcion" name="descripcion"></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Precio*</label>
+      <input type="number" class="form-control" [(ngModel)]="dish.precio" name="precio" min="0.01" step="0.01" required>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Categoría*</label>
+      <select class="form-select" [(ngModel)]="dish.categoria_id" name="categoria_id" required>
+        <option value="">Seleccione una categoría</option>
+        <option *ngFor="let cat of categorias" [value]="cat.id">{{ cat.nombre }}</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Imagen actual</label>
+      <div *ngIf="dish.imagen_actual">
+        <img [src]="getImageUrl(dish.imagen_actual)" alt="Imagen actual" style="max-height: 250px;">
+      </div>
+      <div class="form-check mt-2" *ngIf="dish.imagen_actual">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="eliminarImagen" name="eliminarImagen" id="eliminarImagen">
+        <label class="form-check-label" for="eliminarImagen">Eliminar imagen actual</label>
+      </div>
+      <label class="form-label mt-2">Nueva imagen (opcional)</label>
+      <input type="file" class="form-control" (change)="onImageSelected($event)" accept="image/*">
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Tiempo preparación (min)</label>
+        <input type="number" class="form-control" [(ngModel)]="dish.tiempo_preparacion" name="tiempo_preparacion" min="0">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Calorías</label>
+        <input type="number" class="form-control" [(ngModel)]="dish.calorias" name="calorias" min="0">
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Ingredientes (separados por coma)</label>
+      <input type="text" class="form-control" [(ngModel)]="dish.ingredientes" name="ingredientes">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Alérgenos (separados por coma)</label>
+      <input type="text" class="form-control" [(ngModel)]="dish.alergenos" name="alergenos">
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-6">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" [(ngModel)]="dish.disponible" name="disponible">
+          <label class="form-check-label">Disponible</label>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" [(ngModel)]="dish.destacado" name="destacado">
+          <label class="form-check-label">Destacado</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Tipo de servicio*</label>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" [checked]="dish.tipo_servicio.includes('en mesa')" (change)="toggleServicio('en mesa')">
+        <label class="form-check-label">En mesa</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" [checked]="dish.tipo_servicio.includes('para llevar')" (change)="toggleServicio('para llevar')">
+        <label class="form-check-label">Para llevar</label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" [checked]="dish.tipo_servicio.includes('a domicilio')" (change)="toggleServicio('a domicilio')">
+        <label class="form-check-label">A domicilio</label>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Maridaje recomendado</label>
+      <input type="text" class="form-control" [(ngModel)]="dish.maridaje_recomendado" name="maridaje_recomendado">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Video de preparación actual</label>
+      <div *ngIf="dish.video_preparacion">
+        <video width="320" height="240" controls>
+          <source [src]="getVideoUrl(dish.video_preparacion)" type="video/mp4">          Tu navegador no soporta el elemento de video.
+        </video>
+      </div>
+      <div class="form-check mt-2" *ngIf="dish.video_preparacion">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="eliminarVideo" name="eliminarVideo" id="eliminarVideo">
+        <label class="form-check-label" for="eliminarVideo">Eliminar video actual</label>
+      </div>
+      <label class="form-label mt-2">Nuevo video (opcional)</label>
+      <input type="file" class="form-control" (change)="onVideoSelected($event)" accept="video/*">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Stock</label>
+      <input type="number" class="form-control" [(ngModel)]="dish.stock" name="stock" min="0">
+    </div>
+
+    <div class="d-flex justify-content-between">
+      <button type="button" class="btn btn-secondary" (click)="router.navigate(['/platos'])">Cancelar</button>
+      <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </div>
+  </form>
+
+  <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-danger mt-3">{{ errorMessage }}</div>
+</div>

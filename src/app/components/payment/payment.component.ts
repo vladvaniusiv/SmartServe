@@ -81,6 +81,6 @@ export class PaymentComponent {
 
     console.log('Pago realizado con éxito.');
     alert(`Pago realizado con éxito. Total: €${this.totalPrice}`);
-    this.router.navigate(['/']);
+    this.router.navigate(['/#/']);
   }
 }

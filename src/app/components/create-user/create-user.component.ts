@@ -35,7 +35,7 @@ export class CreateUserComponent {
       if (storedUser) {
         this.user.company_name = JSON.parse(storedUser).company_name;
       } else {
-        this.router.navigate(['/login']);
+        this.router.navigate(['/#/login']);
       }
     }
   }
@@ -47,7 +47,7 @@ export class CreateUserComponent {
       response => {
         console.log('Usuario personal creado:', response);
         alert('Usuario creado con éxito');
-        this.router.navigate(['/welcome']);
+        this.router.navigate(['/#/welcome']);
       },
       error => {
         console.error('Error en la creación', error);
@@ -64,6 +64,6 @@ export class CreateUserComponent {
     );
   }
   goToUpdateUser() {
-    this.router.navigate(['/update-user']);
+    this.router.navigate(['/#/update-user']);
   }
 }

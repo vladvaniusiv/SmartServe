@@ -32,7 +32,7 @@ export class LoginComponent {
         localStorage.setItem('user', JSON.stringify(response.user)); // Guardamos datos del usuario
 
         // Redirigir a la página de bienvenida
-        this.router.navigate(['/welcome']).then(() => {
+        this.router.navigate(['/#/welcome']).then(() => {
           // Pequeña pausa para asegurar la navegación antes del reload
           setTimeout(() => {
             window.location.reload();

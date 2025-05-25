@@ -123,10 +123,10 @@ export class MenuSectionComponent {
     this.applyFilters();
   }
 
-    // Modificar getImageUrl()
   getImageUrl(path: string): string {
-    if (!path) return '';
-    return `/assets/images/${path}`;
+    //if (!path) return '';
+    //return `/assets/images/${path}`;
+    return `/assets/images/platos/${path}`;
   }
 
   getCategoryName(catId: number): string {
@@ -136,7 +136,9 @@ export class MenuSectionComponent {
 
 getCategoryIcon(catId: number): string | null {
   const cat = this.categories.find(c => c.id === catId);
-  return cat && cat.icono_url ? cat.icono_url : null;
+  //return cat && cat.icono_url ? cat.icono_url : null;
+  return cat?.icono ? `/assets/images/categorias/${cat.icono}` : null;
+
 }
 
   // Modificar processDishes()
@@ -151,7 +153,8 @@ getCategoryIcon(catId: number): string | null {
 
   // Modificar getCartIconPath()
   getCartIconPath(): string {
-    return this.getImageUrl(`cart/${this.cartIcon}`);
+    //return this.getImageUrl(`cart/${this.cartIcon}`);
+    return '/assets/images/cart/cart.png';
   }
 
   get filteredAndSortedDishes() {

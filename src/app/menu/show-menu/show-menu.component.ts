@@ -65,15 +65,16 @@ export class ShowMenuComponent implements OnInit {
     this.currentSection = newSection;
   }
 
-// Modificar loadMenu()
   loadMenu() {
     if (!this.menuId) return;
-
-    // Modificar el forkJoin con tipos explícitos
     forkJoin({
+      /*
       menu: this.http.get<any>(`${this.apiUrl}menus/menu_${this.menuId}.json`),
       platos: this.http.get<any[]>(`${this.apiUrl}platos.json`), 
-      categorias: this.http.get<any[]>(`${this.apiUrl}categorias.json`) 
+      categorias: this.http.get<any[]>(`${this.apiUrl}categorias.json`) */
+      menu: this.http.get<any>(`/assets/data/menus/menu_${this.menuId}.json`),
+      platos: this.http.get<any[]>('/assets/data/platos.json'),
+      categorias: this.http.get<any[]>('/assets/data/categorias.json')
     }).subscribe({
       next: ({ menu, platos, categorias }) => {
         this.processStaticData(menu, platos);

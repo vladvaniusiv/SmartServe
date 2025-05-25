@@ -18,6 +18,7 @@ export class NavbarComponent {
 
 
   getLogoUrl(): string {
-      return `${this.logo}`;
+      //return `${this.logo}`;
+      return this.logo ? `/assets/images/menus/logos/${this.logo}` : '';
     }
 }

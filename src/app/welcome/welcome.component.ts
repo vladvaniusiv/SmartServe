@@ -25,48 +25,48 @@ export class WelcomeComponent {
   }
 
   navigateToRegister() {
-    this.router.navigate(['/#/register']);
+    this.router.navigate(['/register']);
   }
 
   navigateToLogin() {
-    this.router.navigate(['/#/login']);
+    this.router.navigate(['/login']);
   }
 
   goToCreateUser() {
-    this.router.navigate(['/#/create-user']);
+    this.router.navigate(['/create-user']);
   }
   goToUpdateUser() {
-    this.router.navigate(['/#/update-user']);
+    this.router.navigate(['/update-user']);
   }
   goToListPersonal() {
-    this.router.navigate(['/#/personal-list']);
+    this.router.navigate(['/personal-list']);
   }
 
   goToCreateMenu() {
-    this.router.navigate(['/#/create-menu']);
+    this.router.navigate(['/create-menu']);
   }
 
   goToCreateDishes(){
-    this.router.navigate(['/#/create-dishes']);
+    this.router.navigate(['/create-dishes']);
   }
 
   goToCreateCategory(){
-    this.router.navigate(['/#/create-category']);
+    this.router.navigate(['/create-category']);
   }
 
   goToListCategory(){
-    this.router.navigate(['/#/list-category']);
+    this.router.navigate(['/list-category']);
   }
 
   goToListPlatos(){
-    this.router.navigate(['/#/list-platos']);
+    this.router.navigate(['/list-platos']);
   }
 
   goToListMenus() {
-    this.router.navigate(['/#/menus']);
+    this.router.navigate(['/menus']);
   }
   
   goToEditMenu() {
-    this.router.navigate(['/#/menus/editar']);
+    this.router.navigate(['/menus/editar']);
   }
 }

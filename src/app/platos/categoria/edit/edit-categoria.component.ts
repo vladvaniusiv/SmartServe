@@ -64,7 +64,7 @@ export class EditCategoriaComponent implements OnInit {
         error: (err) => {
           console.error('Error al cargar categoría', err);
           this.errorMessage = 'Error al cargar la categoría';
-          setTimeout(() => this.router.navigate(['/#/categorias']), 2000);
+          setTimeout(() => this.router.navigate(['/categorias']), 2000);
         }
       });
   }
@@ -152,7 +152,7 @@ export class EditCategoriaComponent implements OnInit {
             next: (response: any) => {
                 console.log('Respuesta del servidor:', response);
                 this.successMessage = 'Categoría actualizada correctamente';
-                setTimeout(() => this.router.navigate(['/#/list-category']), 1500);
+                setTimeout(() => this.router.navigate(['/list-category']), 1500);
             },
             error: (err) => {
                 this.isLoading = false;
@@ -177,6 +177,6 @@ export class EditCategoriaComponent implements OnInit {
 }
 
   cancel(): void {
-    this.router.navigate(['/#/list-category']);
+    this.router.navigate(['/list-category']);
   }
 }

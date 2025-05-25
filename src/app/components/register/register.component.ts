@@ -74,7 +74,7 @@ export class RegisterComponent {
     this.authService.register(this.user).subscribe(
       response => {
         console.log('Usuario registrado exitosamente', response);
-        this.router.navigate(['/#/payment'], {
+        this.router.navigate(['/payment'], {
           state: { 
             phone_number: this.user.phone_number,
             requires_training: this.user.requires_training ?? false,

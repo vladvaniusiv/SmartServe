@@ -106,7 +106,7 @@ export class ConfiguracionComponent implements OnInit {
         if (previousCompanyName !== this.user.company_name) {
           this.updateEmployeeCompanyName();
         } else {
-          this.router.navigate(['/#/welcome']);
+          this.router.navigate(['/welcome']);
         }
       },
       error => {
@@ -119,7 +119,7 @@ export class ConfiguracionComponent implements OnInit {
       this.authService.updateEmployeeCompanyName({ company_name: this.user.company_name }).subscribe(
         () => {
           alert('El nombre de la empresa ha sido actualizado en los empleados.');
-          this.router.navigate(['/#/welcome']);
+          this.router.navigate(['/welcome']);
         },
         error => {
           console.error('Error al actualizar empleados', error);

@@ -93,7 +93,7 @@ get apiUrl(): string {
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token');
       if (!token) {
-        this.router.navigate(['/#/login']);
+        this.router.navigate(['/login']);
         return;
       }
 
@@ -102,7 +102,7 @@ get apiUrl(): string {
           this.user = user;
           this.isAdmin = user.role === 'admin';
         } else {
-          this.router.navigate(['/#/login']);
+          this.router.navigate(['/login']);
         }
       });
 
@@ -340,7 +340,7 @@ addSelectedDishesToMenu() {
       console.error('Error al agregar platos:', err);
       if (err.status === 401) {
         alert('Sesión expirada. Por favor, inicia sesión nuevamente');
-        this.router.navigate(['/#/login']);
+        this.router.navigate(['/login']);
       } else if (err.status === 404) {
         alert('Menú no encontrado. Por favor, recarga la página e intenta nuevamente.');
       } else {
@@ -362,7 +362,7 @@ addSelectedDishesToMenu() {
       },
       error: (err) => {
         console.error('Error al cargar menú:', err);
-        if (err.status === 401) this.router.navigate(['/#/login']);
+        if (err.status === 401) this.router.navigate(['/login']);
       }
     });
   }

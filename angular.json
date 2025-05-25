@@ -35,7 +35,13 @@
               "src/assets",
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "src/assets",
+                "output": "/assets/"
+              },
+              {
+                "glob": "404.html",
+                "input": "docs",
+                "output": "/"
               }
             ],
             "styles": [

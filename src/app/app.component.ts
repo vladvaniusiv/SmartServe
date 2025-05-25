@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { UserService } from './services/user.service';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -14,7 +16,15 @@ export class AppComponent {
   retornarNombreApellidos(){
     return this.nombre + ' ' + this.apellidos;
   }
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService,private router: Router) {
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        if (event.urlAfterRedirects.startsWith('/welcome#')) {
+          const newUrl = event.urlAfterRedirects.replace('/welcome#', '');
+          this.router.navigateByUrl(newUrl);
+        }
+      });}
 
 ngOnInit() {
   this.userService.loadUserFromLocalStorage();

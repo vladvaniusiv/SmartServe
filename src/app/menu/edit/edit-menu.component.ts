@@ -180,7 +180,7 @@ export class EditMenuComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar menú:', err);
         if (err.status === 401) {
-          this.router.navigate(['/#/login']);
+          this.router.navigate(['/login']);
         } else {
           this.errorMessage = 'Error al cargar el menú. Intente nuevamente.';
         }

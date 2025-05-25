@@ -42,7 +42,7 @@ export class ListMenuComponent implements OnInit {
   loadMenus() {
     const token = localStorage.getItem('token');
     if (!token) {
-      this.router.navigate(['/#/login']);
+      this.router.navigate(['/login']);
       return;
     }
 
@@ -58,7 +58,7 @@ export class ListMenuComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar menús:', err);
         if (err.status === 401) {
-          this.router.navigate(['/#/login']);
+          this.router.navigate(['/login']);
         } else {
           this.errorMessage = 'Error al cargar los menús. Intente nuevamente.';
         }

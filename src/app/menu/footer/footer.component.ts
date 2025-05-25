@@ -23,6 +23,8 @@ export class FooterComponent {
 
   // Cambiar método getSocialIconUrl
   getSocialIconUrl(icon: string): string {
-    return `/assets/images/menus/social_icons/${icon}`;
+    //return `/assets/images/menus/social_icons/${icon}`;
+    const cleanIcon = icon.replace('social_icons/', '');
+    return `/assets/images/menus/social_icons/${cleanIcon}`;
   }
 }

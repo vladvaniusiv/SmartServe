@@ -19,6 +19,10 @@ export class NavbarComponent {
 
   getLogoUrl(): string {
       //return `${this.logo}`;
-      return this.logo ? `/assets/images/menus/logos/${this.logo}` : '';
+      //return this.logo ? `/assets/images/menus/logos/${this.logo}` : '';
+      if (!this.logo) return '';
+      // Eliminar posible prefijo de ruta
+      const cleanLogo = this.logo.replace('logos/', '');
+      return `/assets/images/menus/logos/${cleanLogo}`;
     }
 }

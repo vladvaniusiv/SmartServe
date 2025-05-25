@@ -125,8 +125,11 @@ export class MenuSectionComponent {
 
   getImageUrl(path: string): string {
     //if (!path) return '';
-    //return `/assets/images/${path}`;
-    return `/assets/images/platos/${path}`;
+    //return `/assets/images/platos/${path}`;
+    if (!path) return '';
+    // Eliminar 'platos/' del path si existe
+    const cleanPath = path.replace('platos/', '');
+    return `/assets/images/platos/${cleanPath}`;
   }
 
   getCategoryName(catId: number): string {
@@ -287,13 +290,22 @@ getCategoryIcon(catId: number): string | null {
   }
 
   private formatToArray(value: any): string[] {
+    /*
     if (Array.isArray(value)) {
       return value.filter(item => item.trim() !== '');
     }
     if (typeof value === 'string') {
       return value.split(',').map(item => item.trim()).filter(item => item !== '');
     }
-    return [];
+    return [];*/
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value.replace(/'/g, '"'));
+      } catch (e) {
+        return value.split(',').map((item: string) => item.trim());
+      }
+    }
+    return Array.isArray(value) ? value : [];
   }
 
 

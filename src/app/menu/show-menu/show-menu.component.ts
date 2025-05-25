@@ -108,7 +108,9 @@ export class ShowMenuComponent implements OnInit {
 
   private loadLogo() {
     if (this.menu.config?.logo) {
-      this.logoPreviewUrl = `/assets/images/menus/logos/${this.menu.config.logo}`;
+      //this.logoPreviewUrl = `/assets/images/menus/logos/${this.menu.config.logo}`;
+      const cleanLogo = this.menu.config.logo.replace('logos/', '');
+      this.logoPreviewUrl = `/assets/images/menus/logos/${cleanLogo}`;
     }
   }
 

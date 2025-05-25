@@ -17,15 +17,11 @@ export class FooterComponent {
   @Input() apiUrl: string = ''; 
   @Input() themeClass: string = '';
 
-  getIconPath(iconName: string | undefined): string {
-    if (!iconName) return '';
-    return `${this.apiUrl}storage/menus/social_icons/${iconName}`;
-  }
-
   // Cambiar método getSocialIconUrl
   getSocialIconUrl(icon: string): string {
     //return `/assets/images/menus/social_icons/${icon}`;
-    return `${environment.baseHref}assets/images/menus/social_icons/${icon}`;
-
+    //return `${environment.baseHref}assets/images/menus/social_icons/${icon}`;
+    const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
+    return `${base}assets/images/menus/social_icons/${icon}`;
   }
 }

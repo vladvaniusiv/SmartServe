@@ -63,7 +63,7 @@ export class ShowMenuComponent implements OnInit {
   }
 
   getBasePath(): string {
-    return window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
+    return window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
   }
 
   onSectionChanged(newSection: string) {

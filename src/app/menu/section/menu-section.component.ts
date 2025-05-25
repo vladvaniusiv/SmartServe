@@ -129,7 +129,7 @@ export class MenuSectionComponent {
 
   getImageUrl(path: string): string {
     if (!path) return '';
-    const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
+    const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
     return `${base}assets/images/platos/${path.replace('platos/', '')}`;
   }
 
@@ -139,18 +139,18 @@ export class MenuSectionComponent {
 }
 
 getCartIconPath(): string {
-  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
+  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
   return `${base}assets/images/cart/${this.cartIcon}`;
 }
 
 getCategoryIcon(catId: number): string | null {
   const cat = this.categories.find(c => c.id === catId);
-  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
+  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
   return cat?.icono ? `${base}assets/images/categorias/${cat.icono}` : null;
 }
 
 getSafeVideoUrl(videoPath: string): string {
-  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
+  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
   return `${base}assets/images/platos/${videoPath}`;
 }
 

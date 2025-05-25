@@ -22,6 +22,7 @@ export class NavbarComponent {
       //return `${this.logo}`;
       //return this.logo ? `/assets/images/menus/logos/${this.logo}` : '';
       if (!this.logo) return '';
-      return `${environment.baseHref}assets/images/menus/logos/${this.logo}`;
+        const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
+        return `${base}${this.logo}`;
     }
 }

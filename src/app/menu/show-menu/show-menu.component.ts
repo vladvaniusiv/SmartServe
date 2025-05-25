@@ -37,7 +37,7 @@ export class ShowMenuComponent implements OnInit {
   categorias: any[] = [];
   currentSection: string = 'menu';
   logoPreviewUrl: string | null = null;
-  apiUrl = '/assets/data/'; // Ruta directa a assets
+  apiUrl: string =  this.getBasePath() + 'assets/data/';
 
   menuSections: any = {
     menu: [],
@@ -62,6 +62,10 @@ export class ShowMenuComponent implements OnInit {
     });
   }
 
+  getBasePath(): string {
+    return window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
+  }
+
   onSectionChanged(newSection: string) {
     this.currentSection = newSection;
   }
@@ -73,9 +77,9 @@ export class ShowMenuComponent implements OnInit {
       menu: this.http.get<any>(`${this.apiUrl}menus/menu_${this.menuId}.json`),
       platos: this.http.get<any[]>(`${this.apiUrl}platos.json`), 
       categorias: this.http.get<any[]>(`${this.apiUrl}categorias.json`) */
-      menu: this.http.get<any>(`${environment.baseHref}assets/data/menus/menu_${this.menuId}.json`),
-      platos: this.http.get<any[]>(`${environment.baseHref}assets/data/platos.json`),
-      categorias: this.http.get<any[]>(`${environment.baseHref}assets/data/categorias.json`)
+      menu: this.http.get<any>(`${this.apiUrl}menus/menu_${this.menuId}.json`),
+      platos: this.http.get<any[]>(`${this.apiUrl}platos.json`),
+      categorias: this.http.get<any[]>(`${this.apiUrl}categorias.json`)
     }).subscribe({
       next: ({ menu, platos, categorias }) => {
         this.processStaticData(menu, platos);
@@ -111,7 +115,7 @@ export class ShowMenuComponent implements OnInit {
     if (this.menu.config?.logo) {
       //this.logoPreviewUrl = `/assets/images/menus/logos/${this.menu.config.logo}`;
       const cleanLogo = this.menu.config.logo.replace('logos/', '');
-      this.logoPreviewUrl = `/assets/images/menus/logos/${cleanLogo}`;
+      this.logoPreviewUrl = `${this.getBasePath()}assets/images/menus/logos/${cleanLogo}`;
     }
   }
 

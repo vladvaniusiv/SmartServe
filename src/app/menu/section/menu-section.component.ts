@@ -30,7 +30,7 @@ export class MenuSectionComponent {
   @Input() sectionType: string = ''; // 'menu', 'carta', 'vino', 'aperitivo'
   @Input() sectionDishes: any[] = [];
   @Input() categories: any[] = [];
-  @Input() apiUrl: string = '/assets/data/';
+  @Input() apiUrl: string =  this.getBasePath() + 'assets/data/';
   @Input() themeClass: string = '';
   @Input() allSections: any = {}; // Agregamos este input para recibir todas las secciones
   @Output() sectionChanged = new EventEmitter<string>();
@@ -116,6 +116,10 @@ export class MenuSectionComponent {
     }
   }
 
+  getBasePath(): string {
+    return window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
+  }
+
   setSort(field: string, direction: 'asc' | 'desc', label: string) {
     this.sortField = field;
     this.sortDirection = direction;
@@ -124,11 +128,9 @@ export class MenuSectionComponent {
   }
 
   getImageUrl(path: string): string {
-    //if (!path) return '';
-    //return `/assets/images/platos/${path}`;
     if (!path) return '';
-
-    return `${environment.baseHref}assets/images/platos/${path.replace('platos/', '')}`;
+    const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
+    return `${base}assets/images/platos/${path.replace('platos/', '')}`;
   }
 
   getCategoryName(catId: number): string {
@@ -136,12 +138,20 @@ export class MenuSectionComponent {
   return cat ? cat.nombre : 'Sin categoría';
 }
 
+getCartIconPath(): string {
+  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
+  return `${base}assets/images/cart/${this.cartIcon}`;
+}
+
 getCategoryIcon(catId: number): string | null {
   const cat = this.categories.find(c => c.id === catId);
-  //return cat && cat.icono_url ? cat.icono_url : null;
-  return cat?.icono 
-      ? `${environment.baseHref}assets/images/categorias/${cat.icono}`
-      : null;
+  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
+  return cat?.icono ? `${base}assets/images/categorias/${cat.icono}` : null;
+}
+
+getSafeVideoUrl(videoPath: string): string {
+  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
+  return `${base}assets/images/platos/${videoPath}`;
 }
 
   // Modificar processDishes()
@@ -154,11 +164,6 @@ getCategoryIcon(catId: number): string | null {
     }));
   }
 
-  // Modificar getCartIconPath()
-  getCartIconPath(): string {
-    //return this.getImageUrl(`cart/${this.cartIcon}`);
-    return `/SmartServe/assets/images/cart/cart.png`;
-  }
 
   get filteredAndSortedDishes() {
     let dishes = this.filteredDishes;
@@ -308,11 +313,6 @@ getCategoryIcon(catId: number): string | null {
     return Array.isArray(value) ? value : [];
   }
 
-
-  getSafeVideoUrl(videoPath: string): string {
-    return this.getImageUrl(`platos/${videoPath}`); // Para modo estático
-    // return environment.apiUrl + 'storage/' + videoPath; // Para modo backend
-  }
 
   getMaxAvailable(dish: any): number {
     if (dish.stock === null || dish.stock === undefined) return 999; // Sin límite

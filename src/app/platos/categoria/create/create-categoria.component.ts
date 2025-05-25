@@ -93,7 +93,7 @@ export class CreateCategoriaComponent {
           
           // Redirigir después de 1.5 segundos
           setTimeout(() => {
-            this.router.navigate(['/list-category']);
+            this.router.navigate(['/#/list-category']);
           }, 1500);
         },
           error: (err) => {
@@ -117,6 +117,6 @@ export class CreateCategoriaComponent {
     });
   }
   cancelar() {
-    this.router.navigate(['/list-category']);
+    this.router.navigate(['/#/list-category']);
   }
 }

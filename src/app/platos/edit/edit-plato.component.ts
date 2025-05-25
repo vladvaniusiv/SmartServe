@@ -248,7 +248,7 @@ export class EditPlatoComponent implements OnInit {
         console.log('Respuesta del servidor:', response);
         this.successMessage = 'Plato actualizado con éxito';
         this.isLoading = false;
-        setTimeout(() => this.router.navigate(['/list-platos']), 1500);
+        setTimeout(() => this.router.navigate(['/#/list-platos']), 1500);
       },
       error: (err) => {
         console.error('Error al actualizar plato:', err);

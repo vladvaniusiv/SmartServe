@@ -80,6 +80,6 @@ export class ListCategoriaComponent implements OnInit {
 
   editCategoria(categoriaId: number): void {
     if (!isPlatformBrowser(this.platformId)) return;
-    this.router.navigate(['/categorias/editar', categoriaId]);
+    this.router.navigate(['/#/categorias/editar', categoriaId]);
   }
 }

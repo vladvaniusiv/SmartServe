@@ -72,27 +72,54 @@ export class ListMenuComponent implements OnInit {
     );
   }
 
-  deleteMenu(id: number) {
-    if (!confirm('¿Estás seguro de que deseas eliminar este menú?')) {
-      return;
-    }
+ deleteMenu(id: number) {
+  if (!confirm('¿Estás seguro de que deseas eliminar este menú?')) {
+    return;
+  }
 
-    const token = localStorage.getItem('token');
-    this.http.delete(`${environment.apiUrl}api/menus/${id}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    }).subscribe({
-      next: () => {
-        this.successMessage = 'Menú eliminado correctamente';
-        this.loadMenus();
-        setTimeout(() => this.successMessage = '', 3000);
-      },
-      error: (err) => {
-        console.error('Error al eliminar menú:', err);
-        this.errorMessage = 'Error al eliminar el menú. Intente nuevamente.';
+  const token = localStorage.getItem('token');
+  const headers = {
+    'Authorization': `Bearer ${token}`
+  };
+
+  // 1. Primero eliminar el archivo JSON
+  this.http.delete(`${environment.apiUrl}api/menus-json/${id}`, { headers }).subscribe({
+    next: () => {
+      // 2. Luego eliminar el menú del backend
+      this.http.delete(`${environment.apiUrl}api/menus/${id}`, { headers }).subscribe({
+        next: () => {
+          this.successMessage = 'Menú y archivo JSON eliminados correctamente.';
+          this.loadMenus();
+          setTimeout(() => this.successMessage = '', 3000);
+        },
+        error: (err) => {
+          console.error('Error al eliminar el menú:', err);
+          this.errorMessage = 'El archivo JSON se eliminó, pero hubo un error al eliminar el menú.';
+          setTimeout(() => this.errorMessage = '', 3000);
+        }
+      });
+    },
+    error: (err) => {
+      if (err.status === 404) {
+        // Si el archivo JSON no existe, igual eliminar el menú
+        this.http.delete(`${environment.apiUrl}api/menus/${id}`, { headers }).subscribe({
+          next: () => {
+            this.successMessage = 'Menú eliminado (el archivo JSON no existía).';
+            this.loadMenus();
+            setTimeout(() => this.successMessage = '', 3000);
+          },
+          error: (err) => {
+            console.error('Error al eliminar el menú:', err);
+            this.errorMessage = 'Error al eliminar el menú.';
+            setTimeout(() => this.errorMessage = '', 3000);
+          }
+        });
+      } else {
+        console.error('Error al eliminar el archivo JSON:', err);
+        this.errorMessage = 'Error al eliminar el archivo JSON.';
         setTimeout(() => this.errorMessage = '', 3000);
       }
-    });
-  }
+    }
+  });
+}
 }

@@ -212,22 +212,34 @@
     </span>
   </div>
 
-  <div class="cart-panel" *ngIf="showCart">
-    <h5>Tu pedido</h5>
-    <div *ngFor="let item of cart" class="cart-item">
-      <span>{{ item.nombre }} x {{ item.quantity }} = </span>
-      <span>{{ item.precio * item.quantity | currency:'EUR':'symbol':'1.2-2' }} </span>
+<div class="cart-panel" *ngIf="showCart">
+  <h5>Tu pedido</h5>
+  <div *ngFor="let item of cart" class="cart-item mb-2 p-2 border-bottom">
+    <div class="d-flex justify-content-between">
+      <span>{{ item.nombre }} x {{ item.quantity }}</span>
+      <span>{{ item.precio * item.quantity | currency:'EUR':'symbol':'1.2-2' }}</span>
     </div>
-    <div class="cart-total">
-      <strong>Total:</strong> {{ cartTotal | currency:'EUR':'symbol':'1.2-2' }}
+    
+    <!-- Campo para observaciones -->
+    <div class="mt-2">
+      <label class="form-label small text-muted">Observaciones:</label>
+      <input type="text" class="form-control form-control-sm" 
+             placeholder="Ej: sin gluten, bien cocido..."
+             [(ngModel)]="item.observaciones">
     </div>
-    <div class="text-end mt-3">
-  <button class="btn btn-success" (click)="realizarPedido()"
-          [disabled]="cart.length === 0">
-    Realizar pedido
-  </button>
-</div>
   </div>
+  
+  <div class="cart-total mt-3">
+    <strong>Total:</strong> {{ cartTotal | currency:'EUR':'symbol':'1.2-2' }}
+  </div>
+  
+  <div class="text-end mt-3">
+    <button class="btn btn-success" (click)="realizarPedido()"
+            [disabled]="cart.length === 0">
+      Realizar pedido
+    </button>
+  </div>
+</div>
 
   <!-- Modal de Filtros -->
   <div class="modal-backdrop" *ngIf="showFilterModal" (click)="toggleFilterModal()"></div>
@@ -275,6 +287,60 @@
       <button class="btn btn-primary" (click)="applyFilters()">Aplicar</button>
     </div>
   </div>
+
+  <!-- Botón flotante de estado -->
+<div class="order-status-floating" (click)="toggleOrderStatus()">
+  <i class="bi bi-clock-history"></i>
+</div>
+<!-- Panel de estado del pedido -->
+<div class="order-status-panel" *ngIf="showOrderStatus">
+  <div class="status-header">
+    <h5>Estado de tu pedido</h5>
+    <button class="btn-close" (click)="toggleOrderStatus()"></button>
+  </div>
+  
+  <div *ngIf="pedidoIds.length === 0" class="no-orders">
+    No hay pedidos activos
+  </div>
+  
+  <div *ngFor="let id of pedidoIds" class="status-item">
+    <div class="status-id">Pedido #{{id}}</div>
+    
+    <div *ngIf="orderStatus && orderStatus[id] && !orderStatus[id]?.error" 
+         [class]="'status-badge ' + getStatusClass(orderStatus[id]?.estado)">
+      {{orderStatus[id]?.estado | uppercase}}
+    </div>
+    
+    <div *ngIf="!orderStatus || !orderStatus[id]" class="status-loading">
+      <div class="spinner-border spinner-border-sm" role="status"></div>
+      Consultando estado...
+    </div>
+    
+    <div *ngIf="orderStatus && orderStatus[id]?.error" class="status-error">
+      {{orderStatus[id]?.message || 'Error obteniendo estado'}}
+    </div>
+    
+    <!-- Mostrar todos los platos del pedido -->
+    <div class="status-dishes mt-2" 
+         *ngIf="orderStatus && orderStatus[id] && orderStatus[id]?.platos">
+      <div class="dish" *ngFor="let plato of orderStatus[id]?.platos">
+        {{ plato.nombre }} x {{ plato.cantidad }}
+        <span *ngIf="plato.observaciones" class="text-muted">
+          ({{ plato.observaciones }})
+        </span>
+      </div>
+    </div>
+    
+    <div class="status-time" 
+         *ngIf="orderStatus && orderStatus[id] && orderStatus[id]?.updated_at">
+      Actualizado: {{ (orderStatus[id].updated_at | date:'shortTime') || 'N/A' }}
+    </div>
+  </div>
+  
+  <button class="btn btn-sm btn-refresh" (click)="checkOrderStatus()">
+    <i class="bi bi-arrow-repeat"></i> Actualizar
+  </button>
+</div>
 
   <!-- FOOTER -->
   <app-footer

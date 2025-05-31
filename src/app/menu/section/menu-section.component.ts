@@ -71,6 +71,13 @@ export class MenuSectionComponent {
   selectedSort = 'precio';
   selectedSortKey: string = '';
   selectedSortLabel: string = 'Ninguno';
+
+  //orderStatus: any = null;
+  showOrderStatus = false;
+  pedidoIds: number[] = [];
+  checkingStatus = false;
+  statusCheckInterval: any;
+
   ngOnInit() {
     this.sectionDishes = this.sectionDishes.map(dish => ({
       ...dish,
@@ -100,6 +107,12 @@ export class MenuSectionComponent {
   
     this.allIngredientes = Array.from(ingredientesSet).filter(i => typeof i === 'string');
     this.allAlergenos = Array.from(alergenosSet).filter(a => typeof a === 'string');
+
+    const savedPedidos = localStorage.getItem('ultimosPedidos');
+    if (savedPedidos) {
+      this.pedidoIds = JSON.parse(savedPedidos);
+      this.checkOrderStatus();
+    }
   }
 
 
@@ -211,6 +224,7 @@ getSafeVideoUrl(videoPath: string): string {
     });
   }
 
+/*
   realizarPedido() {
   const pedido = {
     mesa_id: this.getMesaIdDesdeRuta(),
@@ -234,8 +248,190 @@ getSafeVideoUrl(videoPath: string): string {
       alert('Ocurrió un error al enviar el pedido. Intente nuevamente.');
     }
   });
+  }
+*/
+/*
+realizarPedido() {
+  const pedido = {
+    mesa_id: this.getMesaIdDesdeRuta(),
+    platos: this.cart.map(item => ({
+      plato_id: item.id,
+      cantidad: item.quantity,
+      observaciones: item.observaciones || ''
+    })),
+    total: this.cartTotal
+  };
+
+    console.log('Enviando pedido:', pedido); // Log del pedido enviado
+  
+  this.http.post('https://pedidosmenu.loca.lt/api/pedidos', pedido).subscribe({
+    next: (response: any) => {
+      console.log('Respuesta completa del backend:', response); // Respuesta completa
+      
+      // Extrae IDs de los pedidos creados
+      if (response.pedidos && Array.isArray(response.pedidos)) {
+        this.pedidoIds = response.pedidos.map((p: any) => p.id);
+      } else if (response.pedidoIds) {
+        this.pedidoIds = response.pedidoIds;
+      } else {
+        console.error('Formato de respuesta inesperado:', response);
+      }
+
+      console.log('IDs de pedidos recibidos:', this.pedidoIds);
+      alert('Pedido realizado exitosamente');
+      this.cartService.clearCart();
+      this.cart = [];
+      this.showCart = false;
+      this.toggleOrderStatus();
+    },
+    error: (error) => {
+    console.error('Error completo:', error); // Error completo
+    alert('Ocurrió un error al enviar el pedido. Intente nuevamente.');
+    }
+  });
+}*/
+realizarPedido() {
+  const pedido = {
+    mesa_id: this.getMesaIdDesdeRuta(),
+    platos: this.cart.map(item => ({
+      plato_id: item.id,
+      cantidad: item.quantity,
+      observaciones: item.observaciones || ''
+    }))
+  };
+
+  console.log('📤 Enviando pedido:', pedido);
+  
+  this.http.post('https://pedidosmenu.loca.lt/api/pedidos', pedido).subscribe({
+    next: (response: any) => {
+      console.log('📥 Respuesta del backend:', response);
+      
+      if (response.pedidoIds && Array.isArray(response.pedidoIds)) {
+        this.pedidoIds = response.pedidoIds;
+        localStorage.setItem('ultimosPedidos', JSON.stringify(this.pedidoIds));
+        alert('Pedidos realizados exitosamente');
+        this.cartService.clearCart();
+        this.cart = [];
+        this.showCart = false;
+        this.toggleOrderStatus();
+      } else {
+        throw new Error('Formato de respuesta inválido');
+      }
+    },
+    error: (error) => {
+      console.error('❌ Error completo:', error);
+      alert(`Error al realizar el pedido: ${error.error?.detalle || error.message}`);
+    }
+  });
 }
 
+
+// Nuevo método para verificar estado
+/*
+checkOrderStatus() {
+  console.log('Verificando estado para IDs:', this.pedidoIds);
+  
+  if (this.pedidoIds.length === 0) {
+    console.warn('No hay IDs de pedido para verificar');
+    return;
+  }
+  
+  this.pedidoIds.forEach(id => {
+    const url = `https://pedidosmenu.loca.lt/api/pedidos/${id}`;
+    console.log('Consultando:', url);
+    
+    this.http.get(url).subscribe({
+      next: (status: any) => {
+        console.log(`Estado para pedido ${id}:`, status);
+        this.orderStatus[id] = status;
+      },
+      error: (error) => {
+        console.error(`Error en pedido ${id}:`, error);
+        this.orderStatus[id] = { 
+          error: true,
+          message: 'Error obteniendo estado' 
+        };
+      }
+    });
+  });
+}*/
+// En la clase del componente
+orderStatus: { [key: number]: any } = {}; // Inicializar como objeto vacío
+
+checkOrderStatus() {
+  console.log('Verificando estado para IDs:', this.pedidoIds);
+  
+  if (this.pedidoIds.length === 0) {
+    console.warn('No hay IDs de pedido para verificar');
+    return;
+  }
+  
+  this.pedidoIds.forEach(id => {
+    const url = `https://pedidosmenu.loca.lt/api/pedidos/${id}`;
+    console.log('Consultando:', url);
+    
+    this.http.get(url).subscribe({
+      next: (status: any) => {
+        if (status.platos) {
+          status.platos = status.platos.map((plato: any) => {
+            const platoLocal = this.findPlatoById(plato.plato_id);
+            return {
+              ...plato,
+              nombre: platoLocal ? platoLocal.nombre : `Plato #${plato.plato_id}`
+            };
+          });
+        }
+        
+        this.orderStatus = {
+          ...this.orderStatus,
+          [id]: status
+        };
+      },
+      error: (error) => {
+        console.error(`Error en pedido ${id}:`, error);
+        this.orderStatus = {
+          ...this.orderStatus,
+          [id]: { 
+            error: true,
+            message: 'Error obteniendo estado' 
+          }
+        };
+      }
+    });
+  });
+}
+
+// Buscar plato por ID en los datos locales
+findPlatoById(id: number): any {
+  return this.sectionDishes.find(dish => dish.id === id);
+}
+
+// Alternar visibilidad del estado
+toggleOrderStatus() {
+  this.showOrderStatus = !this.showOrderStatus;
+  
+  if (this.showOrderStatus) {
+    this.checkOrderStatus();
+    // Consultar cada 5 segundos (5000 ms)
+    this.statusCheckInterval = setInterval(() => {
+      this.checkOrderStatus();
+    }, 5000);
+  } else {
+    clearInterval(this.statusCheckInterval);
+  }
+}
+
+// Obtener clase CSS según estado
+getStatusClass(status: string): string {
+  switch (status) {
+    case 'pendiente': return 'status-pending';
+    case 'en preparación': return 'status-preparing';
+    case 'en camino': return 'status-onway';
+    case 'entregado': return 'status-delivered';
+    case 'cancelado': return 'status-cancelled';
+    default: return '';
+  }
+}
   getMesaIdDesdeRuta(): number {
     const parts = this.router.url.split('/');
     const mesaStr = parts.find(part => part.startsWith('mesa-'));

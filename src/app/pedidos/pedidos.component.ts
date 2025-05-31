@@ -29,45 +29,46 @@ export class PedidosComponent implements OnInit {
     }
   }
 
-  cargarPedidos(): void {
-    if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('token');
-      const headers = new HttpHeaders(token ? {
-        'Authorization': `Bearer ${token}`
-      } : {});
+cargarPedidos(): void {
+  if (typeof window !== 'undefined') {
+    const token = localStorage.getItem('token');
+    const headers = new HttpHeaders(token ? {
+      'Authorization': `Bearer ${token}`
+    } : {});
 
-      // Primero obtenemos todos los platos para mapear los nombres
-      this.http.get<any[]>(environment.apiUrl + 'api/platos', { headers }).subscribe({
-        next: (platosCatalogo) => {
-          // Luego obtenemos los pedidos
-          this.http.get<any[]>(environment.apiUrl + 'api/pedidos', { headers }).subscribe({
-            next: (data) => {
-              this.pedidos = data.map(pedido => {
-                const platos = typeof pedido.platos === 'string'
-                  ? JSON.parse(pedido.platos)
-                  : pedido.platos;
+    // Primero obtenemos todos los platos para mapear los nombres
+    this.http.get<any[]>(environment.apiUrl + 'api/platos', { headers }).subscribe({
+      next: (platosCatalogo) => {
+        // Luego obtenemos los pedidos
+        this.http.get<any[]>(environment.apiUrl + 'api/pedidos', { headers }).subscribe({
+          next: (data) => {
+            this.pedidos = data.map(pedido => {
+              const platos = typeof pedido.platos === 'string'
+                ? JSON.parse(pedido.platos)
+                : pedido.platos;
 
-                const platosConNombre = platos.map((p: { id: any; }) => {
-                  const encontrado = platosCatalogo.find(plato => plato.id === p.id);
-                  return {
-                    ...p,
-                    nombre: encontrado ? encontrado.nombre : 'Desconocido'
-                  };
-                });
-
+              const platosConNombre = platos.map((p: any) => {
+                // CORRECCIÓN: Usar plato_id en lugar de id
+                const encontrado = platosCatalogo.find(plato => plato.id === p.plato_id);
                 return {
-                  ...pedido,
-                  platos: platosConNombre
+                  ...p,
+                  nombre: encontrado ? encontrado.nombre : 'Desconocido'
                 };
               });
-            },
-            error: err => console.error('Error al cargar pedidos:', err)
-          });
-        },
-        error: err => console.error('Error al cargar platos:', err)
-      });
-    }
+
+              return {
+                ...pedido,
+                platos: platosConNombre
+              };
+            });
+          },
+          error: err => console.error('Error al cargar pedidos:', err)
+        });
+      },
+      error: err => console.error('Error al cargar platos:', err)
+    });
   }
+}
 
   actualizarEstado(pedido: any): void {
     if (typeof window !== 'undefined') {

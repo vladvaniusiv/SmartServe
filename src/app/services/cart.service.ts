@@ -68,4 +68,11 @@ export class CartService {
     this.cartTotalSubject.next(this.cartItems.reduce((sum, i) => sum + i.precio * i.quantity, 0));
     this.cartCountSubject.next(this.cartItems.reduce((sum, i) => sum + i.quantity, 0));
   }
+
+  clearCart() {
+  this.cartItems = [];
+  this.cartSubject.next(this.cartItems);
+  this.cartTotalSubject.next(0);
+  this.cartCountSubject.next(0);
+}
 }

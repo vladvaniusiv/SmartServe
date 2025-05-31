@@ -212,13 +212,29 @@ getSafeVideoUrl(videoPath: string): string {
   }
 
   realizarPedido() {
-    this.cartService.getCartItems().forEach(item => {
-      this.cartService.removeFromCart(item);
-    });
-    alert('Pedido simulado exitosamente');
-    this.cart = [];
-    this.showCart = false;
-  }
+  const pedido = {
+    mesa_id: this.getMesaIdDesdeRuta(),
+    platos: this.cart.map(item => ({
+      plato_id: item.id,
+      cantidad: item.quantity,
+      observaciones: item.observaciones || ''
+    })),
+    total: this.cartTotal
+  };
+
+  this.http.post('http://localhost:3000/api/pedidos', pedido).subscribe({
+    next: (response) => {
+      alert('Pedido realizado exitosamente');
+      this.cartService.clearCart();
+      this.cart = [];
+      this.showCart = false;
+    },
+    error: (error) => {
+      console.error('Error al realizar el pedido:', error);
+      alert('Ocurrió un error al enviar el pedido. Intente nuevamente.');
+    }
+  });
+}
 
   getMesaIdDesdeRuta(): number {
     const parts = this.router.url.split('/');

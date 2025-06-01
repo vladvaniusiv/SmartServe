@@ -8,71 +8,93 @@ export class CartService {
   private cartSubject = new BehaviorSubject<any[]>([]);
   private cartTotalSubject = new BehaviorSubject<number>(0);
   private cartCountSubject = new BehaviorSubject<number>(0);
+  private carritosPorMesa: { [key: string]: any[] } = {};
 
   constructor() {
-    this.cartItems = this.loadCartFromStorage();
+  }
+
+  setCurrentMesa(mesa: string): void {
+    if (!this.carritosPorMesa[mesa]) {
+      this.carritosPorMesa[mesa] = this.loadCartFromStorage(mesa);
+    }
+    this.updateState(mesa);
   }
 
   cart$ = this.cartSubject.asObservable();
   total$ = this.cartTotalSubject.asObservable();
   count$ = this.cartCountSubject.asObservable();
 
-  private loadCartFromStorage(): any[] {
+  private loadCartFromStorage(mesa: string): any[] {
     try {
-      const savedCart = localStorage.getItem('cart');
+      const savedCart = localStorage.getItem(`cart_${mesa}`);
       return savedCart ? JSON.parse(savedCart) : [];
     } catch (error) {
       return [];
     }
   }
 
-  private saveCartToStorage(): void {
-    localStorage.setItem('cart', JSON.stringify(this.cartItems));
+  private saveCartToStorage(mesa: string): void {
+    localStorage.setItem(`cart_${mesa}`, JSON.stringify(this.carritosPorMesa[mesa]));
   }
 
 
-  addToCart(dish: any) {
-    const existing = this.cartItems.find(item => item.id === dish.id);
+  addToCart(dish: any, mesa: string) {
+    if (!this.carritosPorMesa[mesa]) {
+      this.carritosPorMesa[mesa] = this.loadCartFromStorage(mesa);
+    }
+    
+    const existing = this.carritosPorMesa[mesa].find(item => item.id === dish.id);
     if (existing) {
       existing.quantity++;
     } else {
-      this.cartItems.push({ ...dish, quantity: 1 });
+      this.carritosPorMesa[mesa].push({ 
+        ...dish, 
+        quantity: 1,
+        observaciones: '' 
+      });
     }
-    this.updateState();
+    
+    this.saveCartToStorage(mesa);
   }
 
-  removeFromCart(dish: any) {
-    const index = this.cartItems.findIndex(item => item.id === dish.id);
+  removeFromCart(dish: any, mesa: string) {
+    if (!this.carritosPorMesa[mesa]) return;
+    
+    const index = this.carritosPorMesa[mesa].findIndex(item => item.id === dish.id);
     if (index !== -1) {
-      if (this.cartItems[index].quantity > 1) {
-        this.cartItems[index].quantity--;
+      if (this.carritosPorMesa[mesa][index].quantity > 1) {
+        this.carritosPorMesa[mesa][index].quantity--;
       } else {
-        this.cartItems.splice(index, 1);
+        this.carritosPorMesa[mesa].splice(index, 1);
       }
+      this.saveCartToStorage(mesa);
     }
-    this.updateState();
   }
 
-  getCartItems() {
-    return this.cartItems;
+  getCartItems(mesa: string): any[] {
+    if (!this.carritosPorMesa[mesa]) {
+      this.carritosPorMesa[mesa] = this.loadCartFromStorage(mesa);
+    }
+    return [...this.carritosPorMesa[mesa]];
   }
 
-  getDishQuantity(id: number) {
-    const item = this.cartItems.find(i => i.id === id);
+  getDishQuantity(id: number, mesa: string): number {
+    const cart = this.getCartItems(mesa);
+    const item = cart.find(item => item.id === id);
     return item ? item.quantity : 0;
   }
 
-  private updateState() {
-    this.saveCartToStorage();
-    this.cartSubject.next([...this.cartItems]);
-    this.cartTotalSubject.next(this.cartItems.reduce((sum, i) => sum + i.precio * i.quantity, 0));
-    this.cartCountSubject.next(this.cartItems.reduce((sum, i) => sum + i.quantity, 0));
+  private updateState(mesa: string) {
+    const cartItems = this.getCartItems(mesa);
+    this.cartSubject.next([...cartItems]);
+    this.cartTotalSubject.next(cartItems.reduce((sum, i) => sum + i.precio * i.quantity, 0));
+    this.cartCountSubject.next(cartItems.reduce((sum, i) => sum + i.quantity, 0));
   }
 
-  clearCart() {
-  this.cartItems = [];
-  this.cartSubject.next(this.cartItems);
-  this.cartTotalSubject.next(0);
-  this.cartCountSubject.next(0);
-}
+  clearCart(mesa: string) {
+    if (this.carritosPorMesa[mesa]) {
+      this.carritosPorMesa[mesa] = [];
+      this.saveCartToStorage(mesa);
+    }
+  }
 }

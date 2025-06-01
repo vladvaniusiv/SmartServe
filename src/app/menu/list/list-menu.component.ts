@@ -6,6 +6,7 @@ import { HttpClient,HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment.development';
 import { PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import * as QRCode from 'qrcode';
 
 @Component({
   selector: 'app-list-menu',
@@ -52,7 +53,7 @@ export class ListMenuComponent implements OnInit {
       }
     }).subscribe({
       next: (data) => {
-        this.menus = data;
+        this.menus = data.map(menu => ({ ...menu, qrCount: 1 }));
         this.filteredMenus = [...this.menus];
       },
       error: (err) => {
@@ -64,6 +65,53 @@ export class ListMenuComponent implements OnInit {
         }
       }
     });
+  }
+
+  async generateQRCodes(menuId: number, mesaCount: number) {
+    try {
+      if (mesaCount < 1 || mesaCount > 20) {
+        alert('Por favor, ingrese un número válido de mesas (1-20)');
+        return;
+      }
+
+      const baseUrl = window.location.origin;
+      
+      for (let i = 1; i <= mesaCount; i++) {
+        const mesaUrl = `${baseUrl}/#/menus/${menuId}/mesa/${i}`;
+        const fileName = `menu-${menuId}-mesa-${i}.png`;
+        
+        // Generar el código QR
+        const qrDataUrl = await QRCode.toDataURL(mesaUrl, {
+          width: 400,
+          margin: 2,
+          color: {
+            dark: '#000000',
+            light: '#FFFFFF'
+          }
+        });
+
+        // Descargar el QR
+        this.downloadQR(qrDataUrl, fileName);
+      }
+
+      this.successMessage = `Se han generado ${mesaCount} códigos QR para este menú`;
+      setTimeout(() => this.successMessage = '', 3000);
+      
+    } catch (error) {
+      console.error('Error generando QR:', error);
+      this.errorMessage = 'Error al generar los códigos QR';
+      setTimeout(() => this.errorMessage = '', 3000);
+    }
+  }
+
+  // Función auxiliar para descargar el QR
+  private downloadQR(dataUrl: string, fileName: string) {
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
   filterMenus() {

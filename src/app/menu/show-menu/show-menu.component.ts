@@ -5,6 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { environment } from '../../../environments/environment';
+import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-show',
@@ -38,7 +39,7 @@ export class ShowMenuComponent implements OnInit {
   currentSection: string = 'menu';
   logoPreviewUrl: string | null = null;
   apiUrl: string =  this.getBasePath() + 'assets/data/';
-
+  mesa: string = '';
   menuSections: any = {
     menu: [],
     carta: [],
@@ -58,6 +59,7 @@ export class ShowMenuComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.menuId = +params['id'];
+      this.mesa = params['mesaId'];
       this.loadMenu();
     });
   }
@@ -166,6 +168,8 @@ export class ShowMenuComponent implements OnInit {
   
     return uniquePlatos;
   }
+
+
 
   // ShowMenuComponent.ts (fragmento corregido)
   formatToArray(data: string | any[]): any[] {

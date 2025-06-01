@@ -34,6 +34,7 @@ export class MenuSectionComponent {
   @Input() themeClass: string = '';
   @Input() allSections: any = {}; // Agregamos este input para recibir todas las secciones
   @Output() sectionChanged = new EventEmitter<string>();
+  @Input() mesa: string = '';
 
   searchTerm: string = '';
   filter: string = '';
@@ -84,6 +85,8 @@ export class MenuSectionComponent {
       ingredientes: this.formatToArray(dish.ingredientes),
       alergenos: this.formatToArray(dish.alergenos)}));
   
+    this.cart = this.cartService.getCartItems(this.mesa);
+
     this.cartService.cart$.subscribe((items: any[]) => {
       this.cart = items;
     });
@@ -108,7 +111,7 @@ export class MenuSectionComponent {
     this.allIngredientes = Array.from(ingredientesSet).filter(i => typeof i === 'string');
     this.allAlergenos = Array.from(alergenosSet).filter(a => typeof a === 'string');
 
-    const savedPedidos = localStorage.getItem('ultimosPedidos');
+    const savedPedidos = localStorage.getItem(`ultimosPedidos_${this.mesa}`);
     if (savedPedidos) {
       this.pedidoIds = JSON.parse(savedPedidos);
       this.checkOrderStatus();
@@ -224,81 +227,15 @@ getSafeVideoUrl(videoPath: string): string {
     });
   }
 
-/*
-  realizarPedido() {
-  const pedido = {
-    mesa_id: this.getMesaIdDesdeRuta(),
-    platos: this.cart.map(item => ({
-      plato_id: item.id,
-      cantidad: item.quantity,
-      observaciones: item.observaciones || ''
-    })),
-    total: this.cartTotal
-  };
-
-  this.http.post('http://localhost:3000/api/pedidos', pedido).subscribe({
-    next: (response) => {
-      alert('Pedido realizado exitosamente');
-      this.cartService.clearCart();
-      this.cart = [];
-      this.showCart = false;
-    },
-    error: (error) => {
-      console.error('Error al realizar el pedido:', error);
-      alert('Ocurrió un error al enviar el pedido. Intente nuevamente.');
-    }
-  });
-  }
-*/
-/*
 realizarPedido() {
   const pedido = {
-    mesa_id: this.getMesaIdDesdeRuta(),
-    platos: this.cart.map(item => ({
-      plato_id: item.id,
-      cantidad: item.quantity,
-      observaciones: item.observaciones || ''
-    })),
-    total: this.cartTotal
-  };
-
-    console.log('Enviando pedido:', pedido); // Log del pedido enviado
-  
-  this.http.post('https://pedidosmenu.loca.lt/api/pedidos', pedido).subscribe({
-    next: (response: any) => {
-      console.log('Respuesta completa del backend:', response); // Respuesta completa
-      
-      // Extrae IDs de los pedidos creados
-      if (response.pedidos && Array.isArray(response.pedidos)) {
-        this.pedidoIds = response.pedidos.map((p: any) => p.id);
-      } else if (response.pedidoIds) {
-        this.pedidoIds = response.pedidoIds;
-      } else {
-        console.error('Formato de respuesta inesperado:', response);
-      }
-
-      console.log('IDs de pedidos recibidos:', this.pedidoIds);
-      alert('Pedido realizado exitosamente');
-      this.cartService.clearCart();
-      this.cart = [];
-      this.showCart = false;
-      this.toggleOrderStatus();
-    },
-    error: (error) => {
-    console.error('Error completo:', error); // Error completo
-    alert('Ocurrió un error al enviar el pedido. Intente nuevamente.');
-    }
-  });
-}*/
-realizarPedido() {
-  const pedido = {
-    mesa_id: this.getMesaIdDesdeRuta(),
-    platos: this.cart.map(item => ({
-      plato_id: item.id,
-      cantidad: item.quantity,
-      observaciones: item.observaciones || ''
-    }))
-  };
+      mesa_id: this.mesa,
+      platos: this.cart.map(item => ({
+        plato_id: item.id,
+        cantidad: item.quantity,
+        observaciones: item.observaciones || ''
+      }))
+    };
 
   console.log('📤 Enviando pedido:', pedido);
   
@@ -308,9 +245,9 @@ realizarPedido() {
       
       if (response.pedidoIds && Array.isArray(response.pedidoIds)) {
         this.pedidoIds = response.pedidoIds;
-        localStorage.setItem('ultimosPedidos', JSON.stringify(this.pedidoIds));
+        localStorage.setItem(`ultimosPedidos_${this.mesa}`, JSON.stringify(this.pedidoIds));
         alert('Pedidos realizados exitosamente');
-        this.cartService.clearCart();
+        this.cartService.clearCart(this.mesa);
         this.cart = [];
         this.showCart = false;
         this.toggleOrderStatus();
@@ -325,37 +262,6 @@ realizarPedido() {
   });
 }
 
-
-// Nuevo método para verificar estado
-/*
-checkOrderStatus() {
-  console.log('Verificando estado para IDs:', this.pedidoIds);
-  
-  if (this.pedidoIds.length === 0) {
-    console.warn('No hay IDs de pedido para verificar');
-    return;
-  }
-  
-  this.pedidoIds.forEach(id => {
-    const url = `https://pedidosmenu.loca.lt/api/pedidos/${id}`;
-    console.log('Consultando:', url);
-    
-    this.http.get(url).subscribe({
-      next: (status: any) => {
-        console.log(`Estado para pedido ${id}:`, status);
-        this.orderStatus[id] = status;
-      },
-      error: (error) => {
-        console.error(`Error en pedido ${id}:`, error);
-        this.orderStatus[id] = { 
-          error: true,
-          message: 'Error obteniendo estado' 
-        };
-      }
-    });
-  });
-}*/
-// En la clase del componente
 orderStatus: { [key: number]: any } = {}; // Inicializar como objeto vacío
 
 checkOrderStatus() {
@@ -444,19 +350,19 @@ getStatusClass(status: string): string {
   }
 
   addToCart(dish: any) {
-    if (dish.stock != null && this.getDishQuantity(dish.id) >= dish.stock) {
-      alert(`No hay suficiente stock. Solo quedan ${dish.stock} unidades.`);
-      return;
-    }
-    this.cartService.addToCart(dish);
+    this.cartService.addToCart(dish, this.mesa);
+    this.cart = this.cartService.getCartItems(this.mesa);
+    this.updateCartTotals();
   }
 
   removeFromCart(dish: any) {
-    this.cartService.removeFromCart(dish);
+    this.cartService.removeFromCart(dish, this.mesa);
+    this.cart = this.cartService.getCartItems(this.mesa);
+    this.updateCartTotals();
   }
 
   getDishQuantity(id: number): number {
-    return this.cartService.getDishQuantity(id);
+    return this.cartService.getDishQuantity(id, this.mesa);
   }
 
 
@@ -507,14 +413,6 @@ getStatusClass(status: string): string {
   }
 
   private formatToArray(value: any): string[] {
-    /*
-    if (Array.isArray(value)) {
-      return value.filter(item => item.trim() !== '');
-    }
-    if (typeof value === 'string') {
-      return value.split(',').map(item => item.trim()).filter(item => item !== '');
-    }
-    return [];*/
     if (typeof value === 'string') {
       try {
         return JSON.parse(value.replace(/'/g, '"'));

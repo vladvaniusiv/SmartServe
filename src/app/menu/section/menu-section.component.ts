@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../navbar-menu/navbar-menu.component';
 import { FooterComponent } from '../footer/footer.component';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { TruncatePipe } from '../../pipes/truncate.pipe';
 import { ViewEncapsulation } from '@angular/core';
 import { CartService } from '../../services/cart.service';
@@ -78,6 +78,7 @@ export class MenuSectionComponent {
   pedidoIds: number[] = [];
   checkingStatus = false;
   statusCheckInterval: any;
+  hasActiveOrders: boolean = false;
 
   ngOnInit() {
     this.sectionDishes = this.sectionDishes.map(dish => ({
@@ -114,8 +115,12 @@ export class MenuSectionComponent {
     const savedPedidos = localStorage.getItem(`ultimosPedidos_${this.mesa}`);
     if (savedPedidos) {
       this.pedidoIds = JSON.parse(savedPedidos);
+      this.hasActiveOrders = this.pedidoIds.length > 0;
       this.checkOrderStatus();
     }
+    this.route.params.subscribe(params => {
+    this.mesa = params['mesa'] || '1';
+  });
   }
 
 
@@ -238,25 +243,39 @@ realizarPedido() {
     };
 
   console.log('📤 Enviando pedido:', pedido);
-  
-  this.http.post('https://pedidosmenu.loca.lt/api/pedidos', pedido).subscribe({
-    next: (response: any) => {
-      console.log('📥 Respuesta del backend:', response);
-      
-      if (response.pedidoIds && Array.isArray(response.pedidoIds)) {
-        this.pedidoIds = response.pedidoIds;
-        localStorage.setItem(`ultimosPedidos_${this.mesa}`, JSON.stringify(this.pedidoIds));
-        alert('Pedidos realizados exitosamente');
-        this.cartService.clearCart(this.mesa);
-        this.cart = [];
-        this.showCart = false;
-        this.toggleOrderStatus();
-      } else {
-        throw new Error('Formato de respuesta inválido');
-      }
-    },
+  // Add headers to the request
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  });
+  this.http.post('https://pedidosmenu.loca.lt/api/pedidos', pedido, { headers }).subscribe({
+      next: (response: any) => {
+        if (response.pedidoIds && Array.isArray(response.pedidoIds)) {
+          this.pedidoIds = response.pedidoIds;
+          this.hasActiveOrders = this.pedidoIds.length > 0;
+          localStorage.setItem(`ultimosPedidos_${this.mesa}`, JSON.stringify(this.pedidoIds));
+          
+          // Mostrar estado y actualizar
+          this.showOrderStatus = true;
+          this.checkOrderStatus();
+          
+          // Iniciar intervalo si es necesario
+          if (this.hasActiveOrders && !this.statusCheckInterval) {
+            this.statusCheckInterval = setInterval(() => {
+              this.checkOrderStatus();
+            }, 5000);
+          }
+          
+          alert('Pedidos realizados exitosamente');
+          this.cartService.clearCart(this.mesa);
+          this.cart = [];
+          this.showCart = false;
+        } else {
+          throw new Error('Formato de respuesta inválido');
+        }
+      },
     error: (error) => {
-      console.error('❌ Error completo:', error);
+      console.error('Error completo:', error);
       alert(`Error al realizar el pedido: ${error.error?.detalle || error.message}`);
     }
   });
@@ -269,6 +288,7 @@ checkOrderStatus() {
   
   if (this.pedidoIds.length === 0) {
     console.warn('No hay IDs de pedido para verificar');
+    this.hasActiveOrders = false;
     return;
   }
   
@@ -294,17 +314,46 @@ checkOrderStatus() {
         };
       },
       error: (error) => {
-        console.error(`Error en pedido ${id}:`, error);
-        this.orderStatus = {
-          ...this.orderStatus,
-          [id]: { 
-            error: true,
-            message: 'Error obteniendo estado' 
+          console.error(`Error en pedido ${id}:`, error);
+            if (error.status === 404) {
+              this.removePedido(id);  // Usar la nueva función
+            } else {
+            // Manejar otros errores
+            this.orderStatus = {
+              ...this.orderStatus,
+              [id]: { 
+                error: true,
+                message: 'Error obteniendo estado' 
+              }
+            };
           }
-        };
-      }
-    });
+        }
+      });
   });
+}
+
+// menu-section.component.ts
+removePedido(id: number) {
+  // Eliminar de la lista de IDs
+  this.pedidoIds = this.pedidoIds.filter(pedidoId => pedidoId !== id);
+  
+  // Eliminar de los estados mostrados
+  delete this.orderStatus[id];
+  
+  // Actualizar localStorage
+  localStorage.setItem(`ultimosPedidos_${this.mesa}`, JSON.stringify(this.pedidoIds));
+  
+  // Actualizar estado y detener intervalo si es necesario
+  this.hasActiveOrders = this.pedidoIds.length > 0;
+  if (!this.hasActiveOrders && this.statusCheckInterval) {
+    clearInterval(this.statusCheckInterval);
+    this.statusCheckInterval = null;
+  }
+  
+  // Limpiar errores previos
+  if (this.orderStatus[id]?.error) {
+    delete this.orderStatus[id];
+  }
 }
 
 // Buscar plato por ID en los datos locales
@@ -314,18 +363,24 @@ findPlatoById(id: number): any {
 
 // Alternar visibilidad del estado
 toggleOrderStatus() {
-  this.showOrderStatus = !this.showOrderStatus;
-  
-  if (this.showOrderStatus) {
-    this.checkOrderStatus();
-    // Consultar cada 5 segundos (5000 ms)
-    this.statusCheckInterval = setInterval(() => {
+    this.showOrderStatus = !this.showOrderStatus;
+    
+    if (this.showOrderStatus) {
       this.checkOrderStatus();
-    }, 5000);
-  } else {
-    clearInterval(this.statusCheckInterval);
+      // Iniciar intervalo solo si hay pedidos activos
+      if (this.hasActiveOrders && !this.statusCheckInterval) {
+        this.statusCheckInterval = setInterval(() => {
+          this.checkOrderStatus();
+        }, 5000);
+      }
+    } else {
+      // Detener intervalo al cerrar el panel
+      if (this.statusCheckInterval) {
+        clearInterval(this.statusCheckInterval);
+        this.statusCheckInterval = null;
+      }
+    }
   }
-}
 
 // Obtener clase CSS según estado
 getStatusClass(status: string): string {

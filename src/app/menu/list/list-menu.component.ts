@@ -67,52 +67,53 @@ export class ListMenuComponent implements OnInit {
     });
   }
 
-  async generateQRCodes(menuId: number, mesaCount: number) {
+  async downloadQRCodes(menuId: number, quantity: string) {
+  const qty = parseInt(quantity);
+  if (isNaN(qty) || qty < 1) {
+    alert('Por favor, ingrese un número válido de mesas (mayor que 0)');
+    return;
+  }
+
+  // Obtener URL base mediante prompt
+  const defaultBaseUrl = 'https://your_username.github.io/';
+  const userInput = prompt('Ingrese la URL base para los códigos QR:', defaultBaseUrl);
+  
+  // Validar entrada del usuario
+  if (userInput === null) return; // Usuario canceló
+  if (!userInput) {
+    alert('Debe ingresar una URL válida');
+    return;
+  }
+
+  // Formatear la URL base
+  let baseUrl = userInput.trim();
+  if (!baseUrl.endsWith('/')) baseUrl += '/';
+  baseUrl += 'SmartServe/#/';
+
+  // Generar y descargar QR para cada mesa
+  for (let i = 1; i <= qty; i++) {
+    const url = `${baseUrl}menus/${menuId}/mesa/${i}`;
+    
     try {
-      if (mesaCount < 1 || mesaCount > 20) {
-        alert('Por favor, ingrese un número válido de mesas (1-20)');
-        return;
-      }
-
-      const baseUrl = window.location.origin;
+      const base64 = await QRCode.toDataURL(url, {
+        errorCorrectionLevel: 'H',
+        margin: 1,
+        scale: 8
+      });
       
-      for (let i = 1; i <= mesaCount; i++) {
-        const mesaUrl = `${baseUrl}/#/menus/${menuId}/mesa/${i}`;
-        const fileName = `menu-${menuId}-mesa-${i}.png`;
-        
-        // Generar el código QR
-        const qrDataUrl = await QRCode.toDataURL(mesaUrl, {
-          width: 400,
-          margin: 2,
-          color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          }
-        });
-
-        // Descargar el QR
-        this.downloadQR(qrDataUrl, fileName);
-      }
-
-      this.successMessage = `Se han generado ${mesaCount} códigos QR para este menú`;
-      setTimeout(() => this.successMessage = '', 3000);
-      
-    } catch (error) {
-      console.error('Error generando QR:', error);
-      this.errorMessage = 'Error al generar los códigos QR';
-      setTimeout(() => this.errorMessage = '', 3000);
+      const a = document.createElement('a');
+      a.href = base64;
+      a.download = `menu_${menuId}_mesa_${i}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error(`Error generando QR para mesa ${i}:`, err);
+      alert(`Error generando QR para mesa ${i}. Ver consola para más detalles.`);
     }
   }
+}
 
-  // Función auxiliar para descargar el QR
-  private downloadQR(dataUrl: string, fileName: string) {
-    const link = document.createElement('a');
-    link.href = dataUrl;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
 
   filterMenus() {
     this.filteredMenus = this.menus.filter(menu => 

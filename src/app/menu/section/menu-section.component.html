@@ -255,10 +255,13 @@
                 [value]="cat.id"
                 [checked]="selectedCategories.includes(cat.id)"
                 (change)="onCategoryToggle(cat.id)">
-          <img *ngIf="cat.icono" [src]="cat.icono_url"
+              <img *ngIf="getCategoryIcon(cat.id); else showCatName"
+              [src]="getCategoryIcon(cat.id)"
               alt="{{ cat.nombre }}" width="30"
               class="me-2 rounded border">
-          <label class="form-check-label">{{ cat.nombre }}</label>
+          <ng-template #showCatName>
+            <span class="badge bg-secondary me-2">{{ cat.nombre }}</span>
+          </ng-template>
         </div>
       </div>
     </div>
@@ -289,7 +292,7 @@
   </div>
 
   <!-- Botón flotante de estado -->
-<div class="order-status-floating" (click)="toggleOrderStatus()">
+<div class="order-status-floating" (click)="toggleOrderStatus()" *ngIf="hasActiveOrders">
   <i class="bi bi-clock-history"></i>
 </div>
 <!-- Panel de estado del pedido -->

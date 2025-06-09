@@ -42,7 +42,9 @@ cargarPedidos(): void {
         // Luego obtenemos los pedidos
         this.http.get<any[]>(environment.apiUrl + 'api/pedidos', { headers }).subscribe({
           next: (data) => {
-            this.pedidos = data.map(pedido => {
+            const pedidosAgrupados = Array.isArray(data) ? data : [];
+            this.pedidos = pedidosAgrupados.flatMap(grupo => 
+              grupo.pedidos.map((pedido: any) => {
               const platos = typeof pedido.platos === 'string'
                 ? JSON.parse(pedido.platos)
                 : pedido.platos;
@@ -60,7 +62,7 @@ cargarPedidos(): void {
                 ...pedido,
                 platos: platosConNombre
               };
-            });
+            }));
           },
           error: err => console.error('Error al cargar pedidos:', err)
         });

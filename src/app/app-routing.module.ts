@@ -21,7 +21,7 @@ import { ShowMenuComponent } from './menu/show-menu/show-menu.component';
 
 
 const routes: Routes = [
-  {path: 'menus/:id/mesa/:mesaId', component: ShowMenuComponent },
+  {path: 'menus/:id/mesa/:mesa', component: ShowMenuComponent },
   {path: 'pedidos', component: PedidosComponent },
   {path: 'menus/:id', component: ShowMenuComponent },
   {path: 'menus', component: ListMenuComponent },

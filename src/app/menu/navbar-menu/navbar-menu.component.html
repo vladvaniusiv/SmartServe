@@ -10,4 +10,87 @@
   <!-- Descripción -->
   <p class="mb-3">{{ description }}</p>
 
+  <!-- PESTAÑAS DE SECCIÓN -->
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item" *ngIf="config.visibleSections.menu">
+      <a class="nav-link" [class.active]="sectionType === 'menu'" 
+         (click)="changeSection('menu')">Menú</a>
+    </li>
+    <li class="nav-item" *ngIf="config.visibleSections.carta">
+      <a class="nav-link" [class.active]="sectionType === 'carta'" 
+         (click)="changeSection('carta')">Carta</a>
+    </li>
+    <li class="nav-item" *ngIf="config.visibleSections.vino">
+      <a class="nav-link" [class.active]="sectionType === 'vino'" 
+         (click)="changeSection('vino')">Vinos</a>
+    </li>
+    <li class="nav-item" *ngIf="config.visibleSections.aperitivo">
+      <a class="nav-link" [class.active]="sectionType === 'aperitivo'" 
+         (click)="changeSection('aperitivo')">Aperitivos</a>
+    </li>
+  </ul>
+
+<!-- BUSCADOR Y FILTRO/ORDENACIÓN -->
+<div class="row w-100 mb-3 justify-content-center text-center">
+  <div class="col-12 d-flex justify-content-center mb-3">
+    <input type="text" class="form-control search-input" placeholder="Buscar plato..." 
+           [ngModel]="searchTerm" (ngModelChange)="onSearchChange($event)">
+  </div>
+
+  <div class="col-12 d-flex justify-content-center gap-2 flex-wrap">
+    <button class="btn btn-outline-secondary" (click)="onToggleFilter()">
+      <i class="bi bi-funnel me-1"></i> Filtros
+    </button>
+
+    <div class="dropdown">
+      <button class="btn btn-light border dropdown-toggle" type="button"
+              id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-arrow-down-up me-1"></i> Ordenar por: {{ selectedSortLabel }}
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="sortDropdown">
+        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
+              (click)="onSortChange('precio', 'asc', 'Precio Ascendente')">
+          Precio <span class="arrow">⬆︎</span>
+        </a></li>
+        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
+              (click)="onSortChange('precio', 'desc', 'Precio Descendente')">
+          Precio <span class="arrow">⬇︎</span>
+        </a></li>
+
+        <li><hr class="dropdown-divider"></li>
+
+        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
+              (click)="onSortChange('calorias', 'asc', 'Calorías Ascendente')">
+          Calorías <span class="arrow">⬆︎</span>
+        </a></li>
+        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
+              (click)="onSortChange('calorias', 'desc', 'Calorías Descendente')">
+          Calorías <span class="arrow">⬇︎</span>
+        </a></li>
+<!--
+        <li><hr class="dropdown-divider"></li>
+
+        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
+              (click)="onSortChange('puntuacion_media', 'asc', 'Peor Puntuados')">
+          Puntuación <span class="arrow">⬆︎</span>
+        </a></li>
+        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
+              (click)="onSortChange('puntuacion_media', 'desc', 'Mejor Puntuados')">
+          Puntuación <span class="arrow">⬇︎</span>
+        </a></li>
+-->
+        <li><hr class="dropdown-divider"></li>
+
+        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
+              (click)="onSortChange('tiempo_preparacion', 'asc', 'Tiempo Rápido')">
+          Tiempo <span class="arrow">⬆︎</span>
+        </a></li>
+        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
+              (click)="onSortChange('tiempo_preparacion', 'desc', 'Tiempo Lento')">
+          Tiempo <span class="arrow">⬇︎</span>
+        </a></li>
+      </ul>
+    </div>
+  </div>
+</div>
 </nav>

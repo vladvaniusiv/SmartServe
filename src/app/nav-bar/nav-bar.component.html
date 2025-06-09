@@ -1,7 +1,7 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-success position-fixed w-100 z-1">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">SmartServe</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar navbar-expand-lg navbar-dark bg-transparent bg-lg-success position-fixed w-100 z-1">
+  <div class="container-fluid d-flex justify-content-between align-items-center">
+    
+    <button class="navbar-toggler order-1" type="button" data-bs-toggle="collapse" data-bs-target="#navbarsExample02" aria-controls="navbarsExample02" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -20,6 +20,10 @@
 
         <!-- Si hay usuario autenticado -->
         <ng-container *ngIf="user">
+
+          <li class="nav-item">
+            <a class="nav-link" href="#">SmartServe</a>
+          </li>
 
           <li class="nav-item" *ngIf="user?.role === 'admin' || user?.role === 'personal'">
             <span class="nav-link" (click)="goToUpdateUser()">Modificar cuenta</span>

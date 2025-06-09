@@ -1,0 +1,112 @@
+/* Navbar general */
+.navbar {
+  background: radial-gradient(circle at 50% 50%, #ff85ce, #ffdc8e);
+  border-bottom: 2px solid #e4e4e4;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  font-family: 'Helvetica Neue', sans-serif;
+  border-radius: 0 0 50px 50px;
+}
+
+/* Logo */
+.navbar img {
+  max-height: 60px;
+}
+
+/* Nombre del restaurante */
+.navbar h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+}
+
+/* Descripción */
+.navbar p {
+  color: #666;
+  font-size: 0.95rem;
+}
+
+/* Nav-tabs (Secciones como Menú, Carta, etc.) */
+.nav-tabs {
+  border-bottom: none;
+  justify-content: center;
+}
+
+.nav-tabs .nav-link {
+  font-weight: 500;
+  color: #444;
+  background-color: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  margin: 0 5px;
+  padding: 6px 16px;
+  transition: all 0.2s ease;
+}
+
+.nav-tabs .nav-link:hover {
+  background-color: #e2e6ea;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: #333;
+  color: #fff;
+  border-color: #333;
+}
+
+/* Input de búsqueda más corto y centrado */
+.search-input {
+  width: 60%;
+  max-width: 400px;
+  border-radius: 30px;
+  padding-left: 15px;
+}
+
+/* Botones de filtro y orden */
+.btn-outline-secondary,
+.btn-light {
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Íconos en botones */
+.btn i {
+  font-size: 1rem;
+}
+
+/* Responsive ajustes opcionales */
+@media (max-width: 576px) {
+  .search-input {
+    width: 90%;
+  }
+
+  .btn-outline-secondary,
+  .btn-light {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Dropdown items */
+.dropdown-menu {
+  font-size: 0.9rem;
+  min-width: 220px;
+}
+
+.dropdown-item {
+  padding: 6px 12px;
+}
+
+.dropdown-item .arrow {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+/* Título de sección (e.g. "Carta") */
+.menu-section h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #888;
+  margin-top: 10px;
+}

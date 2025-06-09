@@ -39,7 +39,7 @@ export class ShowMenuComponent implements OnInit {
   currentSection: string = 'menu';
   logoPreviewUrl: string | null = null;
   apiUrl: string =  this.getBasePath() + 'assets/data/';
-  mesa: string = '';
+  mesa: string = '1';
   menuSections: any = {
     menu: [],
     carta: [],
@@ -59,7 +59,7 @@ export class ShowMenuComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.menuId = +params['id'];
-      this.mesa = params['mesaId'];
+      this.mesa = params['mesa'] || '1';
       this.loadMenu();
     });
   }

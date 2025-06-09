@@ -1,4 +1,4 @@
-import { Component,Input,OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../navbar-menu/navbar-menu.component';
@@ -20,7 +20,7 @@ import { Output, EventEmitter } from '@angular/core';
   encapsulation: ViewEncapsulation.None,
 
 })
-export class MenuSectionComponent {
+export class MenuSectionComponent implements OnInit, OnDestroy {
   @Input() config: any;
   @Input() sectionTitle: string = '';
   @Input() restaurantName: string = '';
@@ -34,7 +34,7 @@ export class MenuSectionComponent {
   @Input() themeClass: string = '';
   @Input() allSections: any = {}; // Agregamos este input para recibir todas las secciones
   @Output() sectionChanged = new EventEmitter<string>();
-  @Input() mesa: string = '';
+  @Input() mesa: string = '1';
 
   searchTerm: string = '';
   filter: string = '';
@@ -71,7 +71,7 @@ export class MenuSectionComponent {
   ) {}
   selectedSort = 'precio';
   selectedSortKey: string = '';
-  selectedSortLabel: string = 'Ninguno';
+  selectedSortLabel: string = ' ';
 
   //orderStatus: any = null;
   showOrderStatus = false;
@@ -79,6 +79,7 @@ export class MenuSectionComponent {
   checkingStatus = false;
   statusCheckInterval: any;
   hasActiveOrders: boolean = false;
+  ratings: { [key: string]: number } = {};
 
   ngOnInit() {
     this.sectionDishes = this.sectionDishes.map(dish => ({
@@ -118,24 +119,54 @@ export class MenuSectionComponent {
       this.hasActiveOrders = this.pedidoIds.length > 0;
       this.checkOrderStatus();
     }
-    this.route.params.subscribe(params => {
-    this.mesa = params['mesa'] || '1';
-  });
+    this.loadOrdersForTable();
+  
+    this.statusCheckInterval = setInterval(() => {
+      if (this.pedidoIds.length > 0) {
+        this.checkOrderStatus();
+      }
+    }, 5000);
   }
+
+  ngOnDestroy() {
+  if (this.statusCheckInterval) {
+    clearInterval(this.statusCheckInterval);
+  }
+}
+
+  loadOrdersForTable() {
+  const savedPedidos = localStorage.getItem(`ultimosPedidos_${this.mesa}`);
+  if (savedPedidos) {
+    this.pedidoIds = JSON.parse(savedPedidos);
+    this.hasActiveOrders = this.pedidoIds.length > 0;
+    if (this.hasActiveOrders) {
+      this.checkOrderStatus();
+    }
+  } else {
+    this.checkOrdersForTable(); // Verificar pedidos en backend
+  }
+}
 
 
   ngOnChanges(changes: SimpleChanges) {
-    // Si cambió sectionDishes y ya tiene valor definido...
-    if (changes['sectionDishes'] && this.sectionDishes) {
-      // Recalcular listas únicas de ingredientes y alérgenos
-      this.allIngredientes = Array.from(new Set(
-        this.sectionDishes.flatMap(d => d.ingredientes)
-      ));
-      this.allAlergenos   = Array.from(new Set(
-        this.sectionDishes.flatMap(d => d.alergenos)
-      ));
-    }
+  // Manejar cambios de mesa
+  if (changes['mesa'] && changes['mesa'].currentValue) {
+    const newMesa = changes['mesa'].currentValue;
+    this.cart = this.cartService.getCartItems(newMesa);
+    this.updateCartTotals();
+    this.loadOrdersForTable();
   }
+  
+  // Manejar cambios en los platos
+  if (changes['sectionDishes'] && this.sectionDishes) {
+    this.allIngredientes = Array.from(new Set(
+      this.sectionDishes.flatMap(d => d.ingredientes)
+    ));
+    this.allAlergenos = Array.from(new Set(
+      this.sectionDishes.flatMap(d => d.alergenos)
+    ));
+  }
+}
 
   getBasePath(): string {
     return window.location.hostname.includes('github.io') ? '/SmartServe/' : '/';
@@ -234,13 +265,14 @@ getSafeVideoUrl(videoPath: string): string {
 
 realizarPedido() {
   const pedido = {
-      mesa_id: this.mesa,
+      mesa: parseInt(this.mesa, 10),
       platos: this.cart.map(item => ({
         plato_id: item.id,
         cantidad: item.quantity,
         observaciones: item.observaciones || ''
       }))
     };
+    console.log('Mesa actual:', this.mesa, 'Tipo:', typeof this.mesa);
 
   console.log('📤 Enviando pedido:', pedido);
   // Add headers to the request
@@ -249,11 +281,13 @@ realizarPedido() {
     'Accept': 'application/json'
   });
   this.http.post('https://pedidosmenu.loca.lt/api/pedidos', pedido, { headers }).subscribe({
-      next: (response: any) => {
-        if (response.pedidoIds && Array.isArray(response.pedidoIds)) {
-          this.pedidoIds = response.pedidoIds;
-          this.hasActiveOrders = this.pedidoIds.length > 0;
-          localStorage.setItem(`ultimosPedidos_${this.mesa}`, JSON.stringify(this.pedidoIds));
+    next: (response: any) => {
+      if (response.pedidoIds && Array.isArray(response.pedidoIds)) {
+      this.pedidoIds = response.pedidoIds;
+      this.hasActiveOrders = true;
+      
+      // Guardar usando mesa como clave
+      localStorage.setItem(`ultimosPedidos_${this.mesa}`, JSON.stringify(this.pedidoIds));
           
           // Mostrar estado y actualizar
           this.showOrderStatus = true;
@@ -284,17 +318,13 @@ realizarPedido() {
 orderStatus: { [key: number]: any } = {}; // Inicializar como objeto vacío
 
 checkOrderStatus() {
-  console.log('Verificando estado para IDs:', this.pedidoIds);
-  
   if (this.pedidoIds.length === 0) {
-    console.warn('No hay IDs de pedido para verificar');
     this.hasActiveOrders = false;
     return;
   }
-  
+
   this.pedidoIds.forEach(id => {
     const url = `https://pedidosmenu.loca.lt/api/pedidos/${id}`;
-    console.log('Consultando:', url);
     
     this.http.get(url).subscribe({
       next: (status: any) => {
@@ -314,46 +344,54 @@ checkOrderStatus() {
         };
       },
       error: (error) => {
-          console.error(`Error en pedido ${id}:`, error);
-            if (error.status === 404) {
-              this.removePedido(id);  // Usar la nueva función
-            } else {
-            // Manejar otros errores
-            this.orderStatus = {
-              ...this.orderStatus,
-              [id]: { 
-                error: true,
-                message: 'Error obteniendo estado' 
-              }
-            };
-          }
+        if (error.status === 404) {
+          this.removePedido(id);
+        } else {
+          this.orderStatus = {
+            ...this.orderStatus,
+            [id]: { 
+              error: true,
+              message: 'Error obteniendo estado' 
+            }
+          };
         }
-      });
+      }
+    });
   });
 }
 
-// menu-section.component.ts
+checkOrdersForTable() {
+  this.http.get<any[]>(`https://pedidosmenu.loca.lt/api/pedidos/por-mesa/${this.mesa}`)
+    .subscribe({
+      next: (pedidos) => {
+        if (pedidos.length > 0) {
+          this.pedidoIds = pedidos.map(p => p.id);
+          localStorage.setItem(`ultimosPedidos_${this.mesa}`, JSON.stringify(this.pedidoIds));
+          this.hasActiveOrders = true;
+          this.checkOrderStatus();
+        } else {
+          this.hasActiveOrders = false;
+          localStorage.removeItem(`ultimosPedidos_${this.mesa}`);
+        }
+      },
+      error: () => {
+        this.hasActiveOrders = false;
+        localStorage.removeItem(`ultimosPedidos_${this.mesa}`);
+      }
+    });
+}
+
 removePedido(id: number) {
-  // Eliminar de la lista de IDs
   this.pedidoIds = this.pedidoIds.filter(pedidoId => pedidoId !== id);
-  
-  // Eliminar de los estados mostrados
-  delete this.orderStatus[id];
-  
-  // Actualizar localStorage
   localStorage.setItem(`ultimosPedidos_${this.mesa}`, JSON.stringify(this.pedidoIds));
-  
-  // Actualizar estado y detener intervalo si es necesario
   this.hasActiveOrders = this.pedidoIds.length > 0;
+  
   if (!this.hasActiveOrders && this.statusCheckInterval) {
     clearInterval(this.statusCheckInterval);
     this.statusCheckInterval = null;
   }
   
-  // Limpiar errores previos
-  if (this.orderStatus[id]?.error) {
-    delete this.orderStatus[id];
-  }
+  delete this.orderStatus[id];
 }
 
 // Buscar plato por ID en los datos locales
@@ -501,5 +539,4 @@ getStatusClass(status: string): string {
       this.selectedCategories.push(categoryId);
     }
   }
-  
 }

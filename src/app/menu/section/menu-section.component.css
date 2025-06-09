@@ -96,12 +96,12 @@
 
   
 .cart-floating {
-  position: relative;
-  bottom: 5px;
-  left: 90%;  
+  position: fixed;
+  bottom: 20px;
+  left: 80% !important;
   width: 60px;
   height: 60px;
-  z-index: 0;
+  z-index: 999;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -109,6 +109,16 @@
   background-color: white;
   border-radius: 50%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media screen and (min-width: 1024px) {
+  .order-status-floating {
+    left: 90% !important;
+  }
+
+  .cart-floating {
+    left: 90% !important;
+  }
 }
 
 .cart-icon {
@@ -136,11 +146,11 @@
 .order-status-floating {
   position: fixed;
   bottom: 100px;
-  right: 20px;
+  left: 80%;
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: #3f51b5;
+  background: #fd6b4a;
   color: white;
   display: flex;
   align-items: center;
@@ -152,8 +162,10 @@
   transition: all 0.3s ease;
 }
 
+
+
 .order-status-floating:hover {
-  background: #303f9f;
+  background: #bf4e35;
   transform: scale(1.1);
 }
 
@@ -241,4 +253,54 @@
 .btn-refresh {
   width: 100%;
   margin-top: 10px;
+}
+
+.card{
+  background-color: #fffafb;
+  border-radius: 20px;
+}
+
+.dish-img{
+    border-radius: 20px;
+}
+
+.card-body {
+  position: relative;
+  padding-bottom: 3.5rem;
+}
+
+.quantity-controls-wrapper {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.add-button-wrapper {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+}
+
+.cart-modal {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 500px;
+  background: white;
+  z-index: 1050;
+  border-radius: 1rem;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1040;
 }

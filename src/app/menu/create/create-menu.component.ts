@@ -598,7 +598,7 @@ addSelectedDishesToMenu() {
       return;
     }
 
-    const exportUrl = `${this.apiUrl}/menus/export/${this.currentMenuId}`;
+    const exportUrl = `${this.apiUrl}menus/export/${this.currentMenuId}`;
     window.open(exportUrl, '_blank');
   }
 }

@@ -1,5 +1,6 @@
 .navbar-nav .nav-item {
     position: relative;
+    cursor: pointer;
   }
   
   .navbar-nav .has-submenu:hover .submenu,
@@ -24,7 +25,6 @@
   .navbar-nav .submenu li {
     list-style: none;
     padding: 10px 15px;
-    cursor: pointer;
     white-space: nowrap;
   }
   
@@ -34,7 +34,7 @@
   }
   
   .navbar-nav .nav-link {
-    color: #fff;
+    color: #aaa;
     cursor: pointer;
     padding: 10px 15px;
     transition: background 0.2s ease-in-out;
@@ -44,3 +44,21 @@
     background-color: rgba(255, 255, 255, 0.2);
     border-radius: 6px;
   }
+
+  @media (max-width: 991.98px) {
+  .navbar {
+    background-color: transparent !important;
+  }
+  
+  .navbar .navbar-brand {
+    display: none;
+  }
+
+  .navbar .navbar-toggler {
+    margin-right: auto;
+  }
+}
+
+.navbar-dark .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='black' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}

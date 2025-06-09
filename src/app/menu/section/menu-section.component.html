@@ -1,116 +1,39 @@
-<div class="menu-section container my-4">
+<div class="menu-section container">
   <!-- NAVBAR -->
   <app-navbar
     [config]="config"
     [restaurantName]="restaurantName"
     [description]="config.description"
-    [logo]="logo">
-  </app-navbar>
+    [logo]="logo"
+    [sectionType]="sectionType"
+    [searchTerm]="searchTerm"
+    [selectedSortLabel]="selectedSortLabel"
+    (sectionChange)="changeSection($event)"
+    (searchTermChange)="searchTerm = $event"
+    (toggleFilter)="toggleFilterModal()"
+    (sortChange)="setSort($event.field, $event.direction, $event.label)"
+  ></app-navbar>
 
-  <!-- PESTAÑAS DE SECCIÓN -->
-  <ul class="nav nav-tabs mb-4">
-    <li class="nav-item" *ngIf="config.visibleSections.menu">
-      <a class="nav-link" [class.active]="sectionType === 'menu'" 
-         (click)="changeSection('menu')">Menú</a>
-    </li>
-    <li class="nav-item" *ngIf="config.visibleSections.carta">
-      <a class="nav-link" [class.active]="sectionType === 'carta'" 
-         (click)="changeSection('carta')">Carta</a>
-    </li>
-    <li class="nav-item" *ngIf="config.visibleSections.vino">
-      <a class="nav-link" [class.active]="sectionType === 'vino'" 
-         (click)="changeSection('vino')">Vinos</a>
-    </li>
-    <li class="nav-item" *ngIf="config.visibleSections.aperitivo">
-      <a class="nav-link" [class.active]="sectionType === 'aperitivo'" 
-         (click)="changeSection('aperitivo')">Aperitivos</a>
-    </li>
-  </ul>
-  
   <!-- TÍTULO DE SECCIÓN -->
   <div class="text-center mt-3">
     <h2 class="text-muted">{{ sectionTitle }}</h2>
   </div>
 
-  <!-- BUSCADOR  Y FILTRO-->
-  <div class="row mb-4">
-    <div class="col-md-6">
-      <input type="text" class="form-control" placeholder="Buscar plato..." 
-             [(ngModel)]="searchTerm">
-    </div>
-    <div class="col-md-6 text-end">
-      <button class="btn btn-outline-secondary" (click)="toggleFilterModal()">
-        <i class="bi bi-funnel"></i> Filtros
-      </button>
-       <!-- Dropdown para orden -->
-    <div class="dropdown">
-      <button class="btn btn-light border dropdown-toggle" type="button"
-              id="sortDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-        Ordenar por: {{ selectedSortLabel }}
-      </button>
-
-      <ul class="dropdown-menu" aria-labelledby="sortDropdown">
-        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
-              (click)="setSort('precio', 'asc', 'Precio Ascendente')">
-          Precio <span class="arrow">⬆︎</span>
-        </a></li>
-        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
-              (click)="setSort('precio', 'desc', 'Precio Descendente')">
-          Precio  <span class="arrow">⬇︎</span>
-        </a></li>
-        
-        <li><hr class="dropdown-divider"></li>
-        
-        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
-              (click)="setSort('calorias', 'asc', 'Calorías Ascendente')">
-          Calorías <span class="arrow">⬆︎</span>
-        </a></li>
-        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
-              (click)="setSort('calorias', 'desc', 'Calorías Descendente')">
-          Calorías  <span class="arrow">⬇︎</span>
-        </a></li>
-
-        <li><hr class="dropdown-divider"></li>
-
-        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
-              (click)="setSort('puntuacion_media', 'asc', 'Peor Puntuados')">
-          Puntuación <span class="arrow">⬆︎</span>
-        </a></li>
-        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
-              (click)="setSort('puntuacion_media', 'desc', 'Mejor Puntuados')">
-          Puntuación <span class="arrow">⬇︎</span>
-        </a></li>
-        
-        <li><hr class="dropdown-divider"></li>
-
-        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
-              (click)="setSort('tiempo_preparacion', 'asc', 'Tiempo Rápido')">
-          Tiempo <span class="arrow">⬆︎</span>
-        </a></li>
-        <li><a class="dropdown-item d-flex justify-content-between align-items-center" 
-              (click)="setSort('tiempo_preparacion', 'desc', 'Tiempo Lento')">
-          Tiempo <span class="arrow">⬇︎</span>
-        </a></li>
-      </ul>
-    </div>
-    
-    </div>
-  </div>
-
+  
   <!-- LISTA DE PLATOS -->
   <div class="dish-list mt-4">
     <div *ngFor="let dish of filteredAndSortedDishes" class="dish-item mb-4">
-      <div *ngIf="dish.disponible" class="card p-3 shadow-sm">
+      <div *ngIf="dish.disponible" class="card shadow-sm">
         <div class="row g-0">
           <!-- Imagen del plato -->
           <div class="col-md-3">
             <img *ngIf="dish.imagen" [src]="getImageUrl(dish.imagen)"
-                 class="img-fluid rounded-start" alt="{{ dish.nombre }}">
+                 class="img-fluid dish-img" alt="{{ dish.nombre }}">
           </div>
           
           <!-- Contenido del plato -->
           <div class="col-md-9">
-            <div class="card-body">
+            <div class="card-body position-relative">
               <div class="d-flex justify-content-between align-items-start">
                 <div>
                   <h5 style="cursor: pointer;">
@@ -131,21 +54,18 @@
                 </div>
                 
                 <!-- Controles de cantidad -->
-                <div class="quantity-controls">
-                  <div *ngIf="getDishQuantity(dish.id) > 0" class="d-flex align-items-center">
-                    <button class="btn btn-sm btn-outline-danger" 
-                            (click)="removeFromCart(dish)">-</button>
-                    <span class="mx-2">{{ getDishQuantity(dish.id) }}</span>
-                    <button class="btn btn-sm btn-outline-success" 
-                            (click)="addToCart(dish)"
-                            [disabled]="getMaxAvailable(dish) <= 0">+</button>
-                  </div>
-                  <button *ngIf="getDishQuantity(dish.id) === 0" class="btn btn-sm btn-primary" 
-                          (click)="addToCart(dish)"
-                          [disabled]="dish.stock !== null && dish.stock <= 0">
+                <div class="quantity-controls-wrapper">
+                <div *ngIf="getDishQuantity(dish.id) > 0" class="d-flex align-items-center justify-content-end">
+                  <button class="btn btn-sm btn-outline-danger" (click)="removeFromCart(dish)">-</button>
+                  <span class="mx-2">{{ getDishQuantity(dish.id) }}</span>
+                  <button class="btn btn-sm btn-outline-success" (click)="addToCart(dish)" [disabled]="getMaxAvailable(dish) <= 0">+</button>
+                </div>
+                <div *ngIf="getDishQuantity(dish.id) === 0">
+                  <button class="btn btn-sm btn-primary" (click)="addToCart(dish)" [disabled]="dish.stock !== null && dish.stock <= 0">
                     {{ dish.stock === 0 ? 'Agotado' : 'Añadir' }}
                   </button>
                 </div>
+              </div>
               </div>
               
               <!-- Botón para expandir/colapsar detalles (siempre visible) -->
@@ -172,14 +92,6 @@
                           <strong>Alérgenos:</strong> {{ dish.alergenos.join(', ') }}
                         </p>
                       </div>
-                      <div class="col-md-6">
-                        <p *ngIf="dish.tiempo_preparacion">
-                          <strong>Tiempo preparación:</strong> {{ dish.tiempo_preparacion }} min
-                        </p>
-                        <p *ngIf="dish.puntuacion_media">
-                          <strong>Puntuación:</strong> {{ dish.puntuacion_media }}
-                        </p>
-                      </div>
                     </div>
                     
                     <p *ngIf="dish.maridaje_recomendado">
@@ -204,7 +116,7 @@
   </div>
 
 <!-- Carrito flotante -->
-  <div class="cart-floating position-relative" (click)="toggleCart()">
+  <div class="cart-floating" (click)="toggleCart()">
     <img [src]="getCartIconPath()" alt="Carrito" class="cart-icon" width="50" />
     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
       {{ cartTotalItems }}
@@ -212,8 +124,11 @@
     </span>
   </div>
 
-<div class="cart-panel" *ngIf="showCart">
-  <h5>Tu pedido</h5>
+<!-- Modal del Carrito -->
+<div class="modal-backdrop" *ngIf="showCart" (click)="toggleCart()"></div>
+<div class="cart-modal p-4 shadow" *ngIf="showCart">
+  <h5 class="fw-bold mb-3">Tu pedido</h5>
+
   <div *ngFor="let item of cart" class="cart-item mb-2 p-2 border-bottom">
     <div class="d-flex justify-content-between">
       <span>{{ item.nombre }} x {{ item.quantity }}</span>
@@ -292,7 +207,9 @@
   </div>
 
   <!-- Botón flotante de estado -->
-<div class="order-status-floating" (click)="toggleOrderStatus()" *ngIf="hasActiveOrders">
+<div class="order-status-floating" 
+     (click)="toggleOrderStatus()" 
+     *ngIf="hasActiveOrders">
   <i class="bi bi-clock-history"></i>
 </div>
 <!-- Panel de estado del pedido -->

@@ -218,20 +218,20 @@
     
     <!-- SECCIÓN DE MENÚ -->
     <div *ngIf="previewVisible" class="col-md-6 border-start ps-4">
-    <app-menu-section
-      [config]="menu.config"
-      [sectionTitle]="currentSection | titlecase"
-      [restaurantName]="user.company_name"
-      [logo]="logoPreviewUrl"
-      [description]="menu.config.description"
-      [sectionType]="currentSection"
-      [allSections]="menuSections"
-      [categories]="categorias"
-      [apiUrl]="apiUrl"
-      [sectionDishes]="menuSections[currentSection] || []"
-      (sectionChanged)="onSectionChanged($event)">
-    </app-menu-section>
-  </div>
+      <app-menu-section
+        [config]="menu.config"
+        [sectionTitle]="currentSection | titlecase"
+        [restaurantName]="user.company_name"
+        [logo]="logoPreviewUrl"
+        [description]="menu.config.description"
+        [sectionType]="currentSection"
+        [allSections]="menuSections"
+        [categories]="categorias"
+        [apiUrl]="apiUrl"
+        [sectionDishes]="menuSections[currentSection] || []"
+        (sectionChanged)="onSectionChanged($event)">
+      </app-menu-section>
+    </div>
   </div>
  <!-- Mensajes de éxito/error -->
  <div *ngIf="successMessage" class="alert alert-success mt-3">{{ successMessage }}</div>

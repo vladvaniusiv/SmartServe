@@ -63,7 +63,7 @@
 /* Botones de filtro y orden */
 .btn-outline-secondary,
 .btn-light {
-  border-radius: 20px;
+  border: none;
   padding: 6px 14px;
   font-size: 0.9rem;
   display: flex;
@@ -83,7 +83,7 @@
 
   .btn-outline-secondary,
   .btn-light {
-    width: 100%;
+    width: auto;
     justify-content: center;
   }
 }
@@ -110,3 +110,82 @@
   color: #888;
   margin-top: 10px;
 }
+
+    /* Contenedor de botones */
+    .buttons-container {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* Botones de filtro y orden */
+    .filter-btn, .sort-btn {
+      flex: 1;
+      min-width: 120px;
+      max-width: 240px;
+      border-radius: 20px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      border: 1px solid #ddd;
+      background: white;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn:hover, .sort-btn:hover {
+      background-color: #f8f9fa;
+      transform: translateY(-2px);
+    }
+
+    /* Íconos en botones */
+    .btn i {
+      margin-right: 6px;
+      font-size: 1rem;
+    }
+
+    /* Dropdown menu */
+    .dropdown-menu {
+      font-size: 0.9rem;
+      min-width: 240px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .dropdown-item {
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .dropdown-divider {
+      margin: 6px 0;
+    }
+
+    /* Título de sección */
+    .menu-section h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #888;
+      margin-top: 10px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .buttons-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .filter-btn, .sort-btn {
+        width: 100%;
+        max-width: 300px;
+      }
+    }

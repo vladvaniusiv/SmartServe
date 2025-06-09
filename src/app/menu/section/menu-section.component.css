@@ -35,7 +35,7 @@
 }
 
 .menu-section {
-    padding: 16px;
+    padding: 0px;
   }
   
   .navbar {
@@ -56,7 +56,7 @@
   }
   
   .dish-list {
-    margin-top: 16px;
+    padding: 20px;
   }
   
   .actions {
@@ -106,7 +106,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: white;
+  background-color: #ffc75b;
   border-radius: 50%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -303,4 +303,8 @@
   height: 100%;
   background: rgba(0,0,0,0.5);
   z-index: 1040;
+}
+
+.container{
+    --bs-gutter-x: 0;
 }

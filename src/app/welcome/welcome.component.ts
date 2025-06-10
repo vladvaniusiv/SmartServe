@@ -74,4 +74,7 @@ getLogoUrl(): string {
   goToEditMenu() {
     this.router.navigate(['/menus/editar']);
   }
+    goToPedidos(){
+    this.router.navigate(['/pedidos']);
+  }
 }

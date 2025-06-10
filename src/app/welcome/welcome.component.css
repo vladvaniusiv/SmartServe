@@ -1,0 +1,14 @@
+.card-dashboard {
+  border-radius: 1rem;
+  transition: all 0.3s ease;
+}
+
+.card-dashboard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 128, 0, 0.1);
+}
+
+.card-title {
+  font-weight: 600;
+  color: #333;
+}

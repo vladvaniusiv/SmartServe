@@ -214,47 +214,55 @@
   <img src="assets/images/SmartServe/clock.png" width="35px" alt="clock">
 </div>
 <!-- Panel de estado del pedido -->
+<!-- Modificar el panel de estado para mostrar todos los pedidos -->
 <div class="order-status-panel" *ngIf="showOrderStatus">
   <div class="status-header">
-    <h5>Estado de tu pedido</h5>
+    <h5>Pedidos - Mesa {{mesa}}</h5>
     <button class="btn-close" (click)="toggleOrderStatus()"></button>
   </div>
   
   <div *ngIf="pedidoIds.length === 0" class="no-orders">
-    No hay pedidos activos
+    No hay pedidos registrados
   </div>
   
-  <div *ngFor="let id of pedidoIds" class="status-item">
-    <div class="status-id">Pedido #{{id}}</div>
-    
-    <div *ngIf="orderStatus && orderStatus[id] && !orderStatus[id]?.error" 
-         [class]="'status-badge ' + getStatusClass(orderStatus[id]?.estado)">
-      {{orderStatus[id]?.estado | uppercase}}
-    </div>
-    
-    <div *ngIf="!orderStatus || !orderStatus[id]" class="status-loading">
-      <div class="spinner-border spinner-border-sm" role="status"></div>
-      Consultando estado...
-    </div>
-    
-    <div *ngIf="orderStatus && orderStatus[id]?.error" class="status-error">
-      {{orderStatus[id]?.message || 'Error obteniendo estado'}}
-    </div>
-    
-    <!-- Mostrar todos los platos del pedido -->
-    <div class="status-dishes mt-2" 
-         *ngIf="orderStatus && orderStatus[id] && orderStatus[id]?.platos">
-      <div class="dish" *ngFor="let plato of orderStatus[id]?.platos">
-        {{ plato.nombre }} x {{ plato.cantidad }}
-        <span *ngIf="plato.observaciones" class="text-muted">
-          ({{ plato.observaciones }})
+  <div class="status-list">
+    <div *ngFor="let id of pedidoIds" class="status-item">
+      <div class="status-header">
+        <span class="status-id">Pedido #{{id}}</span>
+        <span class="status-time">
+          {{ (orderStatus[id]?.created_at | date:'short') || 'Fecha no disponible' }}
         </span>
       </div>
-    </div>
-    
-    <div class="status-time" 
-         *ngIf="orderStatus && orderStatus[id] && orderStatus[id]?.updated_at">
-      Actualizado: {{ (orderStatus[id].updated_at | date:'shortTime') || 'N/A' }}
+      
+      <div *ngIf="orderStatus && orderStatus[id] && !orderStatus[id]?.error" 
+           [class]="'status-badge ' + getStatusClass(orderStatus[id]?.estado)">
+        {{orderStatus[id]?.estado | uppercase}}
+      </div>
+      
+      <div *ngIf="!orderStatus || !orderStatus[id]" class="status-loading">
+        <div class="spinner-border spinner-border-sm" role="status"></div>
+        Consultando estado...
+      </div>
+      
+      <div *ngIf="orderStatus && orderStatus[id]?.error" class="status-error">
+        {{orderStatus[id]?.message || 'Error obteniendo estado'}}
+      </div>
+      
+      <div class="status-dishes mt-2" 
+           *ngIf="orderStatus && orderStatus[id] && orderStatus[id]?.platos">
+        <div class="dish" *ngFor="let plato of orderStatus[id]?.platos">
+          {{ plato.nombre }} x {{ plato.cantidad }}
+          <span *ngIf="plato.observaciones" class="text-muted">
+            ({{ plato.observaciones }})
+          </span>
+        </div>
+      </div>
+      
+      <div class="status-footer">
+        <span class="status-updated" *ngIf="orderStatus && orderStatus[id] && orderStatus[id]?.updated_at">
+          Última actualización: {{ orderStatus[id].updated_at | date:'shortTime' }}
+        </span>
+      </div>
     </div>
   </div>
   

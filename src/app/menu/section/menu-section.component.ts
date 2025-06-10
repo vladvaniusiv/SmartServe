@@ -134,19 +134,6 @@ export class MenuSectionComponent implements OnInit, OnDestroy {
   }
 }
 
-  loadOrdersForTable() {
-  const savedPedidos = localStorage.getItem(`ultimosPedidos_${this.mesa}`);
-  if (savedPedidos) {
-    this.pedidoIds = JSON.parse(savedPedidos);
-    this.hasActiveOrders = this.pedidoIds.length > 0;
-    if (this.hasActiveOrders) {
-      this.checkOrderStatus();
-    }
-  } else {
-    this.checkOrdersForTable(); // Verificar pedidos en backend
-  }
-}
-
 
   ngOnChanges(changes: SimpleChanges) {
   // Manejar cambios de mesa
@@ -263,51 +250,79 @@ getSafeVideoUrl(videoPath: string): string {
     });
   }
 
+// Cambiar la inicialización de pedidoIds para cargar todos los pedidos de la mesa
+loadOrdersForTable() {
+  this.http.get<any[]>(`https://pedidosmenu.loca.lt/api/pedidos/por-mesa/${this.mesa}`)
+    .subscribe({
+      next: (pedidos) => {
+        if (pedidos.length > 0) {
+          // Guardar todos los IDs de pedidos, no solo los nuevos
+          this.pedidoIds = pedidos.map(p => p.id).reverse(); // Más recientes primero
+          localStorage.setItem(`ultimosPedidos_${this.mesa}`, JSON.stringify(this.pedidoIds));
+          this.hasActiveOrders = this.pedidoIds.length > 0;
+          this.checkOrderStatus();
+        } else {
+          this.hasActiveOrders = false;
+          localStorage.removeItem(`ultimosPedidos_${this.mesa}`);
+        }
+      },
+      error: (error) => {
+        console.error('Error al cargar pedidos:', error);
+        // Intentar con los pedidos locales como fallback
+        const savedPedidos = localStorage.getItem(`ultimosPedidos_${this.mesa}`);
+        if (savedPedidos) {
+          this.pedidoIds = JSON.parse(savedPedidos);
+          this.hasActiveOrders = this.pedidoIds.length > 0;
+          if (this.hasActiveOrders) {
+            this.checkOrderStatus();
+          }
+        }
+      }
+    });
+}
+
+// Modificar realizarPedido() para no sobrescribir los pedidos existentes
 realizarPedido() {
   const pedido = {
-      mesa: parseInt(this.mesa, 10),
-      platos: this.cart.map(item => ({
-        plato_id: item.id,
-        cantidad: item.quantity,
-        observaciones: item.observaciones || ''
-      }))
-    };
-    console.log('Mesa actual:', this.mesa, 'Tipo:', typeof this.mesa);
+    mesa: parseInt(this.mesa, 10),
+    platos: this.cart.map(item => ({
+      plato_id: item.id,
+      cantidad: item.quantity,
+      observaciones: item.observaciones || ''
+    }))
+  };
 
-  console.log('📤 Enviando pedido:', pedido);
-  // Add headers to the request
   const headers = new HttpHeaders({
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   });
+
   this.http.post('https://pedidosmenu.loca.lt/api/pedidos', pedido, { headers }).subscribe({
     next: (response: any) => {
       if (response.pedidoIds && Array.isArray(response.pedidoIds)) {
-      this.pedidoIds = response.pedidoIds;
-      this.hasActiveOrders = true;
-      
-      // Guardar usando mesa como clave
-      localStorage.setItem(`ultimosPedidos_${this.mesa}`, JSON.stringify(this.pedidoIds));
-          
-          // Mostrar estado y actualizar
-          this.showOrderStatus = true;
-          this.checkOrderStatus();
-          
-          // Iniciar intervalo si es necesario
-          if (this.hasActiveOrders && !this.statusCheckInterval) {
-            this.statusCheckInterval = setInterval(() => {
-              this.checkOrderStatus();
-            }, 5000);
-          }
-          
-          alert('Pedidos realizados exitosamente');
-          this.cartService.clearCart(this.mesa);
-          this.cart = [];
-          this.showCart = false;
-        } else {
-          throw new Error('Formato de respuesta inválido');
+        // Agregar los nuevos IDs al principio del array (más recientes primero)
+        this.pedidoIds = [...response.pedidoIds, ...this.pedidoIds];
+        this.hasActiveOrders = true;
+        
+        localStorage.setItem(`ultimosPedidos_${this.mesa}`, JSON.stringify(this.pedidoIds));
+        
+        this.showOrderStatus = true;
+        this.checkOrderStatus();
+        
+        if (this.hasActiveOrders && !this.statusCheckInterval) {
+          this.statusCheckInterval = setInterval(() => {
+            this.checkOrderStatus();
+          }, 5000);
         }
-      },
+        
+        alert('Pedidos realizados exitosamente');
+        this.cartService.clearCart(this.mesa);
+        this.cart = [];
+        this.showCart = false;
+      } else {
+        throw new Error('Formato de respuesta inválido');
+      }
+    },
     error: (error) => {
       console.error('Error completo:', error);
       alert(`Error al realizar el pedido: ${error.error?.detalle || error.message}`);

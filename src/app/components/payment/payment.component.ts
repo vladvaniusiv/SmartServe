@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';  // Importa CommonModule
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -21,7 +21,7 @@ export class PaymentComponent {
   accountHolder: string = '';
   ibanError: string = '';
   accountHolderError: string = '';
-  name: string = ''; // Almacena el nombre del usuario
+  name: string = '';
 
 
   constructor(private router: Router) {
@@ -36,9 +36,9 @@ export class PaymentComponent {
   }
 
   updatePrice() {
-    const basePrice = 50; // Registro
-    const trainingPrice = this.requires_training ? 50 : 0; // Formación opcional
-    const staffPrice = this.staff_count * 10; // 10€ por cada usuario de personal
+    const basePrice = 250;
+    const trainingPrice = this.requires_training ? 50 : 0;
+    const staffPrice = this.staff_count * 20;
 
     this.totalPrice = basePrice + trainingPrice + staffPrice;
   }
@@ -49,7 +49,7 @@ export class PaymentComponent {
       return;
     }
 
-    const ibanPattern = /^[A-Z]{2}\d{22}$/; // España: ES+22 dígitos
+    const ibanPattern = /^[A-Z]{2}\d{22}$/;
     if (!this.iban.match(ibanPattern)) {
       this.ibanError = 'IBAN inválido. Debe comenzar con 2 letras y tener 22 dígitos.';
     } else {

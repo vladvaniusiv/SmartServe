@@ -71,14 +71,11 @@
                 </div>
               </div>
             </div>
-
-            <!-- Errores generales -->
             <div class="form-group">
               <small class="text-danger" *ngIf="passwordError">{{ passwordError }}</small>
               <small class="text-danger" *ngIf="registrationError" [innerHTML]="registrationError"></small>
             </div>
             <br>
-            <!-- Botón de envío -->
             <div class="form-group text-center">
               <button type="submit" class="btn btn-primary btn-lg">Registrarme</button>
             </div>

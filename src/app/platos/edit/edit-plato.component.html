@@ -100,7 +100,7 @@
       <label class="form-label">Video de preparación actual</label>
       <div *ngIf="dish.video_preparacion">
         <video width="320" height="240" controls>
-          <source [src]="getVideoUrl(dish.video_preparacion)" type="video/mp4">          Tu navegador no soporta el elemento de video.
+          <source [src]="getVideoUrl(dish.video_preparacion)" type="video/mp4">Tu navegador no soporta el elemento de video.
         </video>
       </div>
       <div class="form-check mt-2" *ngIf="dish.video_preparacion">

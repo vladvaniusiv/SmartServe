@@ -2,7 +2,7 @@ import { Component, Inject, PLATFORM_ID, OnInit, OnDestroy } from '@angular/core
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
-import { Location } from '@angular/common'; // 👈 importar Location
+import { Location } from '@angular/common'; 
 
 @Component({
   selector: 'app-nav-bar',

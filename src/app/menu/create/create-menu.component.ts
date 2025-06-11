@@ -65,29 +65,14 @@ export class CreateMenuComponent implements OnInit {
   configurationSaved = false;
   logoPreview:string | ArrayBuffer | null = null;
   isLoading=false;
-  // Agrega esta propiedad a la clase
-currentSection = 'menu';
-
-// Agrega estos métodos
-getSectionDishes(section: string): any[] {
-  return this.menuSections[section] || [];
-}
-
-onSectionChanged(newSection: string) {
-  this.currentSection = newSection;
-}
-
-get apiUrl(): string {
-  return environment.apiUrl;
-}
+  currentSection = 'menu';
 
   constructor(
     private router: Router, 
     private http: HttpClient,
-  @Inject(PLATFORM_ID) private platformId: Object,
+    @Inject(PLATFORM_ID) private platformId: Object,
     private userService: UserService
-
-    ) {}
+  ) {}
 
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
@@ -109,7 +94,18 @@ get apiUrl(): string {
     this.loadCategorias();
   }}
 
-  // Añadir estos métodos a la clase
+  getSectionDishes(section: string): any[] {
+    return this.menuSections[section] || [];
+  }
+
+  onSectionChanged(newSection: string) {
+    this.currentSection = newSection;
+  }
+
+  get apiUrl(): string {
+    return environment.apiUrl;
+  }
+
   getPlatosBySection(section: string): any[] {
     return this.menuSections[section] || [];
   }
@@ -152,16 +148,13 @@ get apiUrl(): string {
   
     const formData = new FormData();
     
-    // Procesar socialLinks correctamente
     this.config.socialLinks.forEach((social, index) => {
       formData.append(`socialLinks[${index}][name]`, social.name);
       formData.append(`socialLinks[${index}][url]`, social.url);
       
-      // Si hay un archivo de ícono, agregarlo al FormData
       if (social.icon instanceof File) {
         formData.append(`socialLinks[${index}][icon]`, social.icon, social.icon.name);
       } else if (typeof social.icon === 'string') {
-        // Si es un string (ruta existente), mantenerlo
         formData.append(`socialLinks[${index}][icon]`, social.icon);
       }
     });
@@ -181,7 +174,6 @@ get apiUrl(): string {
     formData.append('config', JSON.stringify(configData));
     formData.append('company_name', this.user.company_name);
   
-    // Solo adjuntar el logo si es un archivo nuevo
     if (this.config.logo instanceof File) {
       formData.append('logo', this.config.logo, this.config.logo.name);
     }
@@ -262,12 +254,6 @@ get apiUrl(): string {
   removeSocialLink(index: number) {
     this.config.socialLinks.splice(index, 1);
   }
-  
-  generateMenus(count: number) {
-    if (count < 1) return;
-    // Aquí podrías generar PDF por cada mesa o páginas dinámicas
-    alert(`Se generarán ${count} menús (páginas).`);
-  }
 
   getLogoPreviewUrl(): string {
     if (this.logoPreview) {
@@ -293,62 +279,62 @@ get apiUrl(): string {
     });
   }
 
-addSelectedDishesToMenu() {
-  if (!this.currentMenuId || isNaN(this.currentMenuId)) {
-    console.error('ID de menú inválido:', this.currentMenuId);
-    alert('Error: No se ha seleccionado un menú válido');
-    return;
-  }
+  addSelectedDishesToMenu() {
+    if (!this.currentMenuId || isNaN(this.currentMenuId)) {
+      console.error('ID de menú inválido:', this.currentMenuId);
+      alert('Error: No se ha seleccionado un menú válido');
+      return;
+    }
 
-  const selected = this.filteredDishes.filter(d => d.selected).map(d => d.id);
-  
-  if (selected.length === 0) {
-    alert('Por favor selecciona al menos un plato');
-    return;
-  }
+    const selected = this.filteredDishes.filter(d => d.selected).map(d => d.id);
+    
+    if (selected.length === 0) {
+      alert('Por favor selecciona al menos un plato');
+      return;
+    }
 
-  // Crear array de relaciones igual que en edit-menu
-  const relationsToCreate = [{
-    section: this.selectedSection,
-    dish_ids: selected
-  }];
-
-  // Si no es carta, agregar relación adicional
-  if (this.selectedSection !== 'carta') {
-    relationsToCreate.push({
-      section: 'carta',
+    // Crear array de relaciones igual que en edit-menu
+    const relationsToCreate = [{
+      section: this.selectedSection,
       dish_ids: selected
+    }];
+
+    // Si no es carta, agregar relación adicional
+    if (this.selectedSection !== 'carta') {
+      relationsToCreate.push({
+        section: 'carta',
+        dish_ids: selected
+      });
+    }
+
+    this.http.post(
+      `${environment.apiUrl}api/menus/${this.currentMenuId}/add-platos`, 
+      { relations: relationsToCreate }, // Enviar mismo formato que en edición
+      this.getAuthHeaders()
+    ).subscribe({
+      next: (response: any) => {
+        console.log('Respuesta del servidor:', response);
+        this.updateMenuSections(response.platos);
+
+        this.loadMenu(); // Forzar recarga de datos
+        
+        alert('Platos agregados correctamente');
+        this.closeDishSelector(this.selectedSection);
+        this.filteredDishes.forEach(d => d.selected = false);
+      },
+      error: (err) => {
+        console.error('Error al agregar platos:', err);
+        if (err.status === 401) {
+          alert('Sesión expirada. Por favor, inicia sesión nuevamente');
+          this.router.navigate(['/login']);
+        } else if (err.status === 404) {
+          alert('Menú no encontrado. Por favor, recarga la página e intenta nuevamente.');
+        } else {
+          alert('Error al agregar platos: ' + (err.error?.message || 'Error del servidor'));
+        }
+      }
     });
   }
-
-  this.http.post(
-    `${environment.apiUrl}api/menus/${this.currentMenuId}/add-platos`, 
-    { relations: relationsToCreate }, // Enviar mismo formato que en edición
-    this.getAuthHeaders()
-  ).subscribe({
-    next: (response: any) => {
-      console.log('Respuesta del servidor:', response);
-      this.updateMenuSections(response.platos);
-
-      this.loadMenu(); // Forzar recarga de datos
-      
-      alert('Platos agregados correctamente');
-      this.closeDishSelector(this.selectedSection);
-      this.filteredDishes.forEach(d => d.selected = false);
-    },
-    error: (err) => {
-      console.error('Error al agregar platos:', err);
-      if (err.status === 401) {
-        alert('Sesión expirada. Por favor, inicia sesión nuevamente');
-        this.router.navigate(['/login']);
-      } else if (err.status === 404) {
-        alert('Menú no encontrado. Por favor, recarga la página e intenta nuevamente.');
-      } else {
-        alert('Error al agregar platos: ' + (err.error?.message || 'Error del servidor'));
-      }
-    }
-  });
-}
 
   loadMenu() {
     if (!this.currentMenuId) return;
@@ -367,9 +353,7 @@ addSelectedDishesToMenu() {
     });
   }
 
-  // Método para actualizar todas las secciones del menú
   private updateMenuSections(platos: any[]) {
-    // Reiniciar secciones como en edit-menu
     this.menuSections = {
       menu: [],
       carta: [],
@@ -380,14 +364,12 @@ addSelectedDishesToMenu() {
     if (!platos) return;
 
     platos.forEach(plato => {
-      // Manejar relaciones como en edit-component
       const sections = plato.pivot ? 
         (Array.isArray(plato.pivot) ? 
           plato.pivot.map((p: any) => p.section) : 
           [plato.pivot.section]) : 
         ['carta'];
 
-      // Procesar datos del plato igual que en edit
       plato.ingredientes = this.formatToArray(plato.ingredientes);
       plato.alergenos = this.formatToArray(plato.alergenos);
       plato.tipo_servicio = Array.isArray(plato.tipo_servicio) ? plato.tipo_servicio : 
@@ -402,7 +384,6 @@ addSelectedDishesToMenu() {
     });
   }
 
-  // Añadir método auxiliar igual que en edit
   private formatToArray(value: any): string[] {
     if (!value) return [];
     if (Array.isArray(value)) return value;

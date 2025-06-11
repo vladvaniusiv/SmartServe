@@ -122,7 +122,6 @@ export class EditPlatoComponent implements OnInit {
 
   getImageUrl(path: string): string {
     if (!path) return '';
-    // Si la ruta ya incluye 'storage/', no lo agregues de nuevo
     if (path.startsWith('storage/')) {
       return `${this.apiUrl}${path}`;
     }

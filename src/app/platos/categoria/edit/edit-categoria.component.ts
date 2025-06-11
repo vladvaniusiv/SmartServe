@@ -56,7 +56,6 @@ export class EditCategoriaComponent implements OnInit {
       .subscribe({
         next: (data: any) => {
           this.categoria = data;
-          // Asegurarse que icono es solo el nombre del archivo
           if (this.categoria.icono && this.categoria.icono.includes('/')) {
             this.categoria.icono = this.categoria.icono.split('/').pop();
           }
@@ -87,7 +86,7 @@ export class EditCategoriaComponent implements OnInit {
       }
 
       this.newIcono = file;
-      this.deleteIcono = false; // Si se sube nueva imagen, no eliminar la actual
+      this.deleteIcono = false;
       
       // Mostrar vista previa
       const reader = new FileReader();
@@ -130,9 +129,8 @@ export class EditCategoriaComponent implements OnInit {
         formData.append('icono', this.newIcono, this.newIcono.name);
     }
     
-    // Cambio clave: Enviar como booleano en lugar de string
     if (this.deleteIcono) {
-        formData.append('borrar_icono', this.deleteIcono.toString()); // Envía "true" o "false" como string
+        formData.append('borrar_icono', this.deleteIcono.toString()); 
     }
 
     const headers = new HttpHeaders({

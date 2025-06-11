@@ -81,7 +81,6 @@ export class CreateCategoriaComponent {
         formData.append('icono', this.categoria.icono, this.categoria.icono.name);
     }
 
-      // Configurar los headers con el token
       const headers = new HttpHeaders({
         'Authorization': `Bearer ${token}`,
       });
@@ -91,7 +90,6 @@ export class CreateCategoriaComponent {
           this.successMessage = 'Categoría creada con éxito';
           this.isLoading = false;
           
-          // Redirigir después de 1.5 segundos
           setTimeout(() => {
             this.router.navigate(['/list-category']);
           }, 1500);
@@ -101,7 +99,6 @@ export class CreateCategoriaComponent {
             console.error('Error completo:', err);
             
             if (err.status === 422) {
-                // Mostrar errores de validación del backend
                 if (err.error.errors) {
                     const errors = Object.values(err.error.errors).flat();
                     this.errorMessage = errors.join('\n');

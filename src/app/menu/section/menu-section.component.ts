@@ -3,12 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../navbar-menu/navbar-menu.component';
 import { FooterComponent } from '../footer/footer.component';
-import { environment } from '../../../environments/environment';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { TruncatePipe } from '../../pipes/truncate.pipe';
 import { ViewEncapsulation } from '@angular/core';
 import { CartService } from '../../services/cart.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Output, EventEmitter } from '@angular/core';
 
 @Component({
@@ -27,12 +25,11 @@ export class MenuSectionComponent implements OnInit, OnDestroy {
   @Input() logo: string | null = null;
   @Input() selectedLanguages: string[] = [];
   @Input() description: string = '';
-  @Input() sectionType: string = ''; // 'menu', 'carta', 'vino', 'aperitivo'
+  @Input() sectionType: string = ''; 
   @Input() sectionDishes: any[] = [];
   @Input() categories: any[] = [];
   @Input() apiUrl: string =  this.getBasePath() + 'assets/data/';
-  @Input() themeClass: string = '';
-  @Input() allSections: any = {}; // Agregamos este input para recibir todas las secciones
+  @Input() allSections: any = {}; 
   @Output() sectionChanged = new EventEmitter<string>();
   @Input() mesa: string = '1';
 
@@ -64,7 +61,6 @@ export class MenuSectionComponent implements OnInit, OnDestroy {
   sortField: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
   constructor(
-    private route: ActivatedRoute,
     private http: HttpClient,
     private cartService: CartService,
     private router: Router,
@@ -72,14 +68,13 @@ export class MenuSectionComponent implements OnInit, OnDestroy {
   selectedSort = 'precio';
   selectedSortKey: string = '';
   selectedSortLabel: string = ' ';
-
-  //orderStatus: any = null;
   showOrderStatus = false;
   pedidoIds: number[] = [];
   checkingStatus = false;
   statusCheckInterval: any;
   hasActiveOrders: boolean = false;
   ratings: { [key: string]: number } = {};
+  orderStatus: { [key: number]: any } = {};
 
   ngOnInit() {
     this.sectionDishes = this.sectionDishes.map(dish => ({
@@ -126,6 +121,8 @@ export class MenuSectionComponent implements OnInit, OnDestroy {
         this.checkOrderStatus();
       }
     }, 5000);
+
+    this.fetchDishAvailability();
   }
 
   ngOnDestroy() {
@@ -153,6 +150,10 @@ export class MenuSectionComponent implements OnInit, OnDestroy {
       this.sectionDishes.flatMap(d => d.alergenos)
     ));
   }
+
+  if (changes['sectionDishes'] && this.sectionDishes) {
+    this.fetchDishAvailability();
+  }
 }
 
   getBasePath(): string {
@@ -173,36 +174,25 @@ export class MenuSectionComponent implements OnInit, OnDestroy {
   }
 
   getCategoryName(catId: number): string {
-  const cat = this.categories.find(c => c.id === catId);
-  return cat ? cat.nombre : 'Sin categoría';
-}
-
-getCartIconPath(): string {
-  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
-  return `${base}assets/images/cart/${this.cartIcon}`;
-}
-
-getCategoryIcon(catId: number): string | null {
-  const cat = this.categories.find(c => c.id === catId);
-  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
-  return cat?.icono ? `${base}assets/images/categorias/${cat.icono}` : null;
-}
-
-getSafeVideoUrl(videoPath: string): string {
-  const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
-  return `${base}assets/images/platos/${videoPath}`;
-}
-
-  // Modificar processDishes()
-  private processDishes() {
-    this.sectionDishes = this.sectionDishes.map(dish => ({
-      ...dish,
-      ingredientes: this.formatToArray(dish.ingredientes),
-      alergenos: this.formatToArray(dish.alergenos),
-      imagen: dish.imagen ? this.getImageUrl(`platos/${dish.imagen}`) : null
-    }));
+    const cat = this.categories.find(c => c.id === catId);
+    return cat ? cat.nombre : 'Sin categoría';
   }
 
+  getCartIconPath(): string {
+    const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
+    return `${base}assets/images/cart/${this.cartIcon}`;
+  }
+
+  getCategoryIcon(catId: number): string | null {
+    const cat = this.categories.find(c => c.id === catId);
+    const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
+    return cat?.icono ? `${base}assets/images/categorias/${cat.icono}` : null;
+  }
+
+  getSafeVideoUrl(videoPath: string): string {
+    const base = window.location.hostname.includes('github.io') ? '/SmartServe/' : '';
+    return `${base}assets/images/platos/${videoPath}`;
+  }
 
   get filteredAndSortedDishes() {
     let dishes = this.filteredDishes;
@@ -212,13 +202,11 @@ getSafeVideoUrl(videoPath: string): string {
         const valA = a[this.sortField] ?? 0;
         const valB = b[this.sortField] ?? 0;
 
-        // Handle string comparison
         if (typeof valA === 'string' && typeof valB === 'string') {
           return this.sortDirection === 'asc' 
             ? valA.localeCompare(valB) 
             : valB.localeCompare(valA);
         }
-        // Handle number comparison
         else {
           return this.sortDirection === 'asc' 
             ? valA - valB 
@@ -250,7 +238,6 @@ getSafeVideoUrl(videoPath: string): string {
     });
   }
 
-// Cambiar la inicialización de pedidoIds para cargar todos los pedidos de la mesa
 loadOrdersForTable() {
   this.http.get<any[]>(`https://pedidosmenu.loca.lt/api/pedidos/por-mesa/${this.mesa}`)
     .subscribe({
@@ -281,7 +268,6 @@ loadOrdersForTable() {
     });
 }
 
-// Modificar realizarPedido() para no sobrescribir los pedidos existentes
 realizarPedido() {
   const pedido = {
     mesa: parseInt(this.mesa, 10),
@@ -329,8 +315,6 @@ realizarPedido() {
     }
   });
 }
-
-orderStatus: { [key: number]: any } = {}; // Inicializar como objeto vacío
 
 checkOrderStatus() {
   if (this.pedidoIds.length === 0) {
@@ -533,7 +517,7 @@ getStatusClass(status: string): string {
 
 
   getMaxAvailable(dish: any): number {
-    if (dish.stock === null || dish.stock === undefined) return 999; // Sin límite
+    if (dish.stock === null || dish.stock === undefined) return 999;
     return dish.stock - this.getDishQuantity(dish.id);
   }
 
@@ -554,4 +538,27 @@ getStatusClass(status: string): string {
       this.selectedCategories.push(categoryId);
     }
   }
+
+  fetchDishAvailability() {
+  if (!this.sectionDishes || this.sectionDishes.length === 0) return;
+  
+  const dishIds = this.sectionDishes.map(dish => dish.id);
+  
+  this.http.post('https://pedidosmenu.loca.lt/api/platos/disponibilidad', { dishIds })
+    .subscribe({
+      next: (response: any) => {
+        const availabilityMap = response.dishAvailability || {};
+        
+        // Actualizar la disponibilidad de los platos
+        this.sectionDishes = this.sectionDishes.map(dish => ({
+          ...dish,
+          disponible: availabilityMap[dish.id] ?? dish.disponible
+        }));
+      },
+      error: (error) => {
+        console.error('Error fetching dish availability', error);
+        // Mantener los valores originales en caso de error
+      }
+    });
+}
 }

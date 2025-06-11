@@ -21,7 +21,6 @@ export class EditMenuComponent implements OnInit {
   menu: any = {
     nombre: '',
     config: {
-      theme: 'light',
       description: '',
       logo: null as File | string | null,
       location: 'Calle Falsa 123, Ciudad',
@@ -58,7 +57,6 @@ export class EditMenuComponent implements OnInit {
   currentSection: string = 'menu';
   apiUrl = environment.apiUrl;
 
-  // Para el preview
   menuSections: any = {
     menu: [],
     carta: [],
@@ -69,25 +67,6 @@ export class EditMenuComponent implements OnInit {
   user = {
     company_name: ''
   };
-  config = {
-    theme: 'light',
-    description: '',
-    logo: null as File | string | null,
-    location: 'Calle Falsa 123, Ciudad',
-    wifiPassword: 'restaurante2025',
-    socialLinks: [
-      { name: 'Instagram', url: 'https://instagram.com' },
-      { name: 'Facebook', url: 'https://facebook.com' },
-      { name: 'TikTok', url: 'https://tiktok.com' },
-      { name: 'YouTube', url: 'https://youtube.com' },
-    ] as Array<{ name: string; url: string; icon?: File | string; iconPreview?: string | ArrayBuffer | null }>,
-    visibleSections: {
-      menu: true,
-      carta: true,
-      vino: true,
-      aperitivo: true
-    }
-  };
 
   constructor(
     private route: ActivatedRoute,
@@ -96,25 +75,6 @@ export class EditMenuComponent implements OnInit {
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
-  get sectionDishes() {
-    return this.menuSections[this.currentSection] || [];
-  }
-
-  onSectionChanged(newSection: string) {
-    this.currentSection = newSection;
-  }
-
-  changeTheme(newTheme: 'light' | 'dark') {
-    this.menu.config.theme = newTheme;
-    // Forzar la detección de cambios si es necesario
-    setTimeout(() => {
-      // Esto asegurará que Angular detecte el cambio
-    });
-  }
-
-  get themeClass() {
-    return this.menu.config.theme === 'dark' ? 'theme-dark' : 'theme-light';
-  }
 
   ngOnInit(): void {
     if (isPlatformBrowser(this.platformId)) {
@@ -125,6 +85,14 @@ export class EditMenuComponent implements OnInit {
         this.loadCategorias();
       });
     }
+  }
+
+  get sectionDishes() {
+    return this.menuSections[this.currentSection] || [];
+  }
+
+  onSectionChanged(newSection: string) {
+    this.currentSection = newSection;
   }
 
   loadMenu() {
@@ -250,7 +218,6 @@ export class EditMenuComponent implements OnInit {
     
     if (typeof value === 'string') {
       try {
-        // Intentar parsear si es un string JSON
         const parsed = JSON.parse(value);
         if (Array.isArray(parsed)) {
           return parsed.map(item => String(item).trim()).filter(item => item !== '');
@@ -624,8 +591,6 @@ addDishesToMenu() {
     }
   }
 
-
-// Export data
   exportDataToJSON(): void {
     const token = localStorage.getItem('token');
     const headers = { 'Authorization': `Bearer ${token}` };

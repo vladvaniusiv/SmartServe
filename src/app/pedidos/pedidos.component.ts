@@ -50,7 +50,6 @@ cargarPedidos(): void {
                 : pedido.platos;
 
               const platosConNombre = platos.map((p: any) => {
-                // CORRECCIÓN: Usar plato_id en lugar de id
                 const encontrado = platosCatalogo.find(plato => plato.id === p.plato_id);
                 return {
                   ...p,

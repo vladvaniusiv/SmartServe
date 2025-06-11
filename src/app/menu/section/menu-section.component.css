@@ -80,8 +80,8 @@
   }
   
   .filter-modal {
-    background-color: #ffffff !important; /* color fijo */
-    color: #1e1e1e !important;            /* texto fijo */
+    background-color: #ffffff !important;
+    color: #1e1e1e !important;
     position: fixed;
     top: 10%;
     left: 50%;
@@ -141,7 +141,7 @@
   font-size: 0.9rem;
 }
 
-/*Estado del pedido*/
+/*ESTADO DEL PEDIDO*/
 /* Botón flotante de estado */
 .order-status-floating {
   position: fixed;
@@ -161,8 +161,6 @@
   z-index: 1000;
   transition: all 0.3s ease;
 }
-
-
 
 .order-status-floating:hover {
   background: #bf4e35;
@@ -255,6 +253,7 @@
   margin-top: 10px;
 }
 
+/* CARRITO */
 .card{
   background-color: #fffafb;
   border-radius: 20px;

@@ -4,12 +4,12 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { FormsModule } from '@angular/forms';
-import { TruncatePipe } from '../../pipes/truncate.pipe'; // Importa el pipe
+import { TruncatePipe } from '../../pipes/truncate.pipe';
 
 @Component({
   selector: 'app-list-platos',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule, TruncatePipe], // Añade TruncatePipe
+  imports: [CommonModule, RouterModule, FormsModule, TruncatePipe], 
   templateUrl: './list-platos.component.html',
   styleUrls: ['./list-platos.component.css']
 })
@@ -53,7 +53,6 @@ export class ListPlatosComponent implements OnInit {
     });
   }
 
-  // Método para obtener el nombre de la categoría
   getCategoriaNombre(categoriaId: number): string {
     const categoria = this.categorias.find(c => c.id == categoriaId);
     return categoria ? categoria.nombre : 'Sin categoría';
@@ -73,10 +72,8 @@ export class ListPlatosComponent implements OnInit {
       return;
     }
 
-    // Obtener el token del localStorage
     const token = localStorage.getItem('token');
     
-    // Configurar los headers con el token de autenticación
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
@@ -90,7 +87,6 @@ export class ListPlatosComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al eliminar plato', err);
-        // Mostrar mensaje de error más específico
         this.errorMessage = err.error?.message || 'Error al eliminar el plato';
         setTimeout(() => this.errorMessage = '', 3000);
         
@@ -99,24 +95,20 @@ export class ListPlatosComponent implements OnInit {
 }
 
   updateDisponibilidad(plato: any): void {
-    // Obtener el token del localStorage
     const token = localStorage.getItem('token');
     
-    // Verificar si hay token (usuario autenticado)
     if (!token) {
       this.errorMessage = 'Debes iniciar sesión para realizar esta acción';
       setTimeout(() => this.errorMessage = '', 3000);
-      plato.disponible = !plato.disponible; // Revertir el cambio
+      plato.disponible = !plato.disponible;
       return;
     }
   
-    // Configurar headers con el token de autenticación
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
     });
   
-    // Realizar la petición PUT con los headers
     this.http.put(
       `${environment.apiUrl}api/platos/${plato.id}`, 
       { disponible: plato.disponible },
@@ -128,7 +120,7 @@ export class ListPlatosComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error al actualizar disponibilidad', err);
-        plato.disponible = !plato.disponible; // Revertir el cambio
+        plato.disponible = !plato.disponible; 
         
         if (err.status === 401) {
           this.errorMessage = 'Sesión expirada. Por favor, inicia sesión nuevamente';

@@ -18,7 +18,6 @@ export class PersonalListComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Solo ejecutar en el navegador
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
       const user = JSON.parse(localStorage.getItem('user') || '{}');

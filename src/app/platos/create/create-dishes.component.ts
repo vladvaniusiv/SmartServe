@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { environment } from '../../../environments/environment.development';
-import { Router, RouterModule, Routes } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-create-dishes',
@@ -167,7 +167,6 @@ export class CreateDishesComponent {
         formData.append('video_preparacion', this.video);
       }
   
-      // Debug: Mostrar datos que se enviarán
       formData.forEach((value, key) => {
         console.log(key, value);
       });

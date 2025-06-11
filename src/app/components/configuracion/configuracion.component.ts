@@ -113,7 +113,7 @@ export class ConfiguracionComponent implements OnInit {
         console.error('Error al actualizar', error);
         alert('Hubo un error. Inténtalo de nuevo.');
       }
-    );// Nuevo método para actualizar el nombre de empresa en los empleados
+    );
   }
     updateEmployeeCompanyName() {
       this.authService.updateEmployeeCompanyName({ company_name: this.user.company_name }).subscribe(

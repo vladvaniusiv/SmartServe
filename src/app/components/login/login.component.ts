@@ -22,8 +22,8 @@ export class LoginComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   login(event: Event) {
-    event.preventDefault(); // Evita recargar la página
-    this.loginError = ''; // Resetea errores previos
+    event.preventDefault(); 
+    this.loginError = '';
 
     this.authService.login(this.credentials).subscribe(
       response => {
@@ -36,8 +36,9 @@ export class LoginComponent {
           // Pequeña pausa para asegurar la navegación antes del reload
           setTimeout(() => {
             window.location.reload();
-          }, 100); // 100 ms suelen bastar
-        });      },
+          }, 100); 
+        });      
+      },
       error => {
         console.error('Error en el login', error);
         this.loginError = 'Credenciales incorrectas. Inténtalo de nuevo.';

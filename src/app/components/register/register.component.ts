@@ -52,7 +52,7 @@ export class RegisterComponent {
   }
 
   register(event: Event) {
-    event.preventDefault(); // Evita que la página se recargue al enviar el formulario
+    event.preventDefault(); 
 
     this.passwordError = '';
     this.phoneError = '';   

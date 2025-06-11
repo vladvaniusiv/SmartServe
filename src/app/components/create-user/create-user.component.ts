@@ -28,7 +28,7 @@ export class CreateUserComponent {
   constructor(
     private authService: AuthService, 
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object // Detectar si estamos en el navegador
+    @Inject(PLATFORM_ID) private platformId: Object 
   ) {
     if (isPlatformBrowser(this.platformId)) {
       const storedUser = localStorage.getItem('user');
@@ -41,7 +41,7 @@ export class CreateUserComponent {
   }
 
   createUser(event: Event) {
-    event.preventDefault(); // Evita recargar la página
+    event.preventDefault(); 
 
     this.authService.createUser(this.user).subscribe(
       response => {
@@ -54,7 +54,7 @@ export class CreateUserComponent {
         
         if (error.status === 400 && error.error?.error?.includes('límite de empleados')) {
           this.registrationError = 'Has alcanzado el límite de empleados. ';
-          this.showUpgradeLink = true; // Muestra el enlace a Configuración de Cuenta
+          this.showUpgradeLink = true;
         } else if (error.status === 422 && error.error?.error?.includes('email')) {
           this.registrationError = 'El correo electrónico ya está en uso.';
         } else {

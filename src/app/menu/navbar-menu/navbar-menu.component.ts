@@ -15,7 +15,6 @@ export class NavbarComponent {
   @Input() restaurantName: string = '';
   @Input() description: string = '';
   @Input() logo: string | null = null;
-  @Input() themeClass: string = '';
   @Input() sectionType: string = '';
   @Input() searchTerm: string = '';
   @Input() selectedSortLabel: string = '';

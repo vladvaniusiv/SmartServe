@@ -4,8 +4,6 @@ import { MenuSectionComponent } from '../section/menu-section.component';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
-import { environment } from '../../../environments/environment';
-import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-show',
@@ -18,7 +16,6 @@ export class ShowMenuComponent implements OnInit {
   menu: any = {
     nombre: '',
     config: {
-      theme: 'light',
       description: '',
       logo: null as File | string | null,
       location: 'Calle Falsa 123, Ciudad',
@@ -75,17 +72,13 @@ export class ShowMenuComponent implements OnInit {
   loadMenu() {
     if (!this.menuId) return;
     forkJoin({
-      /*
-      menu: this.http.get<any>(`${this.apiUrl}menus/menu_${this.menuId}.json`),
-      platos: this.http.get<any[]>(`${this.apiUrl}platos.json`), 
-      categorias: this.http.get<any[]>(`${this.apiUrl}categorias.json`) */
       menu: this.http.get<any>(`${this.apiUrl}menus/menu_${this.menuId}.json`),
       platos: this.http.get<any[]>(`${this.apiUrl}platos.json`),
       categorias: this.http.get<any[]>(`${this.apiUrl}categorias.json`)
     }).subscribe({
       next: ({ menu, platos, categorias }) => {
         this.processStaticData(menu, platos);
-        this.categorias = categorias; // <-- Asegurar que categorias es any[]
+        this.categorias = categorias;
         this.loadLogo();
       },
       error: (err) => console.error('Error loading data:', err)
@@ -98,10 +91,8 @@ export class ShowMenuComponent implements OnInit {
 
   const relaciones = menuData.relaciones_menu_plato;
 
-  // Agrega los platos a las secciones según las relaciones
   this.updateMenuSections(relaciones, platos);
 
-  // Establece la primera sección visible con platos
   const visibleSections = this.menu.config.visibleSections;
   const sectionOrder = ['menu', 'carta', 'vino', 'aperitivo'];
 
@@ -115,7 +106,6 @@ export class ShowMenuComponent implements OnInit {
 
   private loadLogo() {
     if (this.menu.config?.logo) {
-      //this.logoPreviewUrl = `/assets/images/menus/logos/${this.menu.config.logo}`;
       const cleanLogo = this.menu.config.logo.replace('logos/', '');
       this.logoPreviewUrl = `${this.getBasePath()}assets/images/menus/logos/${cleanLogo}`;
     }
@@ -137,7 +127,6 @@ export class ShowMenuComponent implements OnInit {
     const plato = platoMap.get(rel.plato_id);
     if (!plato) return;
 
-    // Normalizar campos
     plato.ingredientes = this.formatToArray(plato.ingredientes);
     plato.alergenos = this.formatToArray(plato.alergenos);
     plato.tipo_servicio = Array.isArray(plato.tipo_servicio)
@@ -149,7 +138,6 @@ export class ShowMenuComponent implements OnInit {
     }
   });
 
-  // Sección carta = combinación de todas las demás (sin duplicados)
   const cartaPlatos = [...this.menuSections.menu, ...this.menuSections.vino, ...this.menuSections.aperitivo];
   const uniquePlatos = this.removeDuplicates([...this.menuSections.carta, ...cartaPlatos]);
   this.menuSections.carta = uniquePlatos;
@@ -169,9 +157,6 @@ export class ShowMenuComponent implements OnInit {
     return uniquePlatos;
   }
 
-
-
-  // ShowMenuComponent.ts (fragmento corregido)
   formatToArray(data: string | any[]): any[] {
     if (typeof data === 'string') {
       try {
@@ -186,9 +171,5 @@ export class ShowMenuComponent implements OnInit {
 
   get sectionDishes() {
     return this.menuSections[this.currentSection] || [];
-  }
-
-  get themeClass() {
-    return this.menu.config.theme === 'dark' ? 'theme-dark' : 'theme-light';
   }
 }

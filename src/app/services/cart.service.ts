@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private cartItems: any[] = [];
   private cartSubject = new BehaviorSubject<any[]>([]);
   private cartTotalSubject = new BehaviorSubject<number>(0);
   private cartCountSubject = new BehaviorSubject<number>(0);

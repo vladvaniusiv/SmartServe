@@ -51,7 +51,8 @@
 
       <div *ngIf="selectedPaymentMethod === 'bizum'" class="mt-3">
         <h6>Pago con Bizum</h6>
-        <input type="text" class="form-control" name="bizumPhone" [(ngModel)]="user.phone_number">      </div>
+        <input type="text" class="form-control" name="bizumPhone" [(ngModel)]="user.phone_number">      
+      </div>
     </div>
 
     <button class="btn btn-success" (click)="updateData()">Guardar Cambios</button>

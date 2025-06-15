@@ -1,6 +1,8 @@
 import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../../environments/environment.development';
+import { UserService } from '../../services/user.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-personal-list',
@@ -11,10 +13,15 @@ import { environment } from '../../../environments/environment.development';
 })
 export class PersonalListComponent implements OnInit {
   personalList: any[] = [];
-
+  isAdmin = false;
+  user = {
+    company_name: ''
+  };
   constructor(
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private router: Router,
+    private userService: UserService
   ) {}
 
   ngOnInit(): void {
@@ -35,6 +42,22 @@ export class PersonalListComponent implements OnInit {
         }
       });
     }
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        this.router.navigate(['/login']);
+        return;
+      }
+
+      this.userService.getUser().subscribe(user => {
+        if (user) {
+          this.user = user;
+          this.isAdmin = user.role === 'admin';
+        } else {
+          this.router.navigate(['/login']);
+        }
+      });
+  }
   }
 
 

@@ -1,9 +1,10 @@
-import { Component, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, PLATFORM_ID, Inject, OnInit } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-create-user',
@@ -12,7 +13,7 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./create-user.component.css'],
   imports: [FormsModule, CommonModule]
 })
-export class CreateUserComponent {
+export class CreateUserComponent implements OnInit  {
   user = {
     name: '',
     email: '',
@@ -21,6 +22,7 @@ export class CreateUserComponent {
     company_name: '',
     role: 'personal' 
   };
+  isAdmin = false;
 
   registrationError = '';
   showUpgradeLink: boolean = false;
@@ -28,7 +30,8 @@ export class CreateUserComponent {
   constructor(
     private authService: AuthService, 
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object 
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private userService: UserService
   ) {
     if (isPlatformBrowser(this.platformId)) {
       const storedUser = localStorage.getItem('user');
@@ -37,6 +40,28 @@ export class CreateUserComponent {
       } else {
         this.router.navigate(['/login']);
       }
+    }
+  }
+    ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        this.router.navigate(['/login']);
+        return;
+      }
+
+      this.userService.getUser().subscribe(user => {
+        if (user) {
+          this.user = {
+            ...this.user, 
+            ...user, 
+            password: ''
+          };
+          this.isAdmin = user.role === 'admin';
+        } else {
+          this.router.navigate(['/login']);
+        }
+      });
     }
   }
 

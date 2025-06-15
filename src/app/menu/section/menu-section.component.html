@@ -267,8 +267,10 @@
     </div>
   </div>
   
-  <button class="btn btn-sm btn-refresh" (click)="checkOrderStatus()">
-    <i class="bi bi-arrow-repeat"></i> Actualizar
+  <button class="btn btn-sm btn-refresh" (click)="checkOrderStatus()" [disabled]="isRefreshingStatus">
+    <span *ngIf="isRefreshingStatus" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+    <i *ngIf="!isRefreshingStatus" class="bi bi-arrow-repeat"></i>
+    {{ isRefreshingStatus ? ' Actualizando...' : 'Actualizar' }}
   </button>
 </div>
 

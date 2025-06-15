@@ -19,6 +19,9 @@ export class PedidosComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarPedidos();
+    setInterval(() => {
+      this.cargarPedidos();
+    }, 5000);
   }
 
   parsearPlatos(platos: string): any[] {

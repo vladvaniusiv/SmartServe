@@ -573,13 +573,150 @@ export class CreateMenuComponent implements OnInit {
     }
   }
 
-  exportarDatos() {
-    if (!this.configurationSaved || this.currentMenuId === null) {
-      alert("Debes guardar la configuración antes de exportar los datos.");
-      return;
-    }
-
-    const exportUrl = `${this.apiUrl}menus/export/${this.currentMenuId}`;
-    window.open(exportUrl, '_blank');
+exportarDatos() {
+  if (!this.currentMenuId) {
+    alert("Primero debes crear y guardar el menú antes de exportar los datos.");
+    return;
   }
+
+  const token = localStorage.getItem('token');
+  const headers = { 'Authorization': `Bearer ${token}` };
+
+  this.http.get<any>(`${this.apiUrl}api/menus/${this.currentMenuId}`, { headers }).subscribe(menuData => {
+    this.http.get<any>(`${this.apiUrl}api/menus/${this.currentMenuId}/platos`, { headers }).subscribe({
+      next: (response) => {
+        if (!response.relaciones || !Array.isArray(response.relaciones)) {
+          console.error('Estructura de datos incorrecta');
+          return;
+        }
+
+        const uniqueRelationships = response.relaciones.reduce((acc: any[], rel: any) => {
+          const exists = acc.some(item => 
+            item.menu_id === rel.menu_id && 
+            item.plato_id === rel.plato_id && 
+            item.section === rel.section
+          );
+          
+          if (!exists) {
+            acc.push({
+              menu_id: rel.menu_id,
+              plato_id: rel.plato_id,
+              section: rel.section || 'carta',
+              created_at: rel.created_at,
+              updated_at: rel.updated_at
+            });
+          }
+          return acc;
+        }, []);
+
+        const uniquePlatos = this.removeDuplicates(response.platos);
+
+        this.http.get<any[]>(`${this.apiUrl}api/categorias`, { headers }).subscribe(categoriasData => {
+          // 1. Exportar menú
+          const menuExportData = {
+            menu: this.processMenuData(menuData),
+            relaciones_menu_plato: uniqueRelationships
+          };
+          
+          // 2. Exportar platos (actualizar existente)
+          const platosExportData = this.processPlatosData(uniquePlatos);
+          
+          // 3. Exportar categorías
+          const categoriasExportData = categoriasData;
+
+          // Enviar cada archivo al backend
+          this.exportFileToAssets(
+            JSON.stringify(menuExportData), 
+            `menu_${this.currentMenuId}.json`,
+            'menus'
+          );
+
+          this.exportFileToAssets(
+            JSON.stringify(platosExportData),
+            'platos.json'
+          );
+
+          this.exportFileToAssets(
+            JSON.stringify(categoriasExportData),
+            'categorias.json'
+          );
+
+          alert('Datos exportados correctamente');
+        });
+      },
+      error: (err) => {
+        console.error('Error al exportar:', err);
+        alert('Error al exportar los datos');
+      }
+    });
+  });
+}
+
+private exportFileToAssets(data: string, filename: string, subfolder: string = ''): void {
+  const token = localStorage.getItem('token');
+  const blob = new Blob([data], { type: 'application/json' });
+  const formData = new FormData();
+  
+  formData.append('json', blob, filename);
+  formData.append('subfolder', subfolder);
+
+  this.http.post(`${this.apiUrl}api/export-json`, formData, { 
+    headers: { 'Authorization': `Bearer ${token}` }
+  }).subscribe({
+    next: (res: any) => {
+      console.log('Archivo guardado:', res.relative_path);
+    },
+    error: (err) => {
+      console.error('Error al guardar archivo:', err);
+    }
+  });
+}
+
+private processMenuData(menu: any): any {
+  return {
+    id: menu.id,
+    nombre: menu.nombre,
+    company_name: menu.company_name,
+    config: menu.config,
+    created_at: menu.created_at,
+    updated_at: menu.updated_at
+  };
+}
+
+private processPlatosData(platos: any[]): any[] {
+  return platos.map(plato => ({
+    id: plato.id,
+    nombre: plato.nombre,
+    descripcion: plato.descripcion,
+    precio: plato.precio,
+    categoria_id: plato.categoria_id,
+    imagen: plato.imagen,
+    tiempo_preparacion: plato.tiempo_preparacion,
+    calorias: plato.calorias,
+    ingredientes: plato.ingredientes,
+    alergenos: plato.alergenos,
+    disponible: plato.disponible,
+    destacado: plato.destacado,
+    tipo_servicio: plato.tipo_servicio,
+    maridaje_recomendado: plato.maridaje_recomendado,
+    video_preparacion: plato.video_preparacion,
+    stock: plato.stock,
+    created_at: plato.created_at,
+    updated_at: plato.updated_at
+  }));
+}
+
+private removeDuplicates(platos: any[]): any[] {
+  const uniquePlatos: any[] = [];
+  const platoIds = new Set<number>();
+
+  platos.forEach(plato => {
+    if (!platoIds.has(plato.id)) {
+      platoIds.add(plato.id);
+      uniquePlatos.push(plato);
+    }
+  });
+
+  return uniquePlatos;
+}
 }

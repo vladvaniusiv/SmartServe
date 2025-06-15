@@ -8,6 +8,7 @@ import { PLATFORM_ID, Inject } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { TruncatePipe } from '../../pipes/truncate.pipe';
 import { MenuSectionComponent } from '../section/menu-section.component';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-edit-menu',
@@ -18,6 +19,7 @@ import { MenuSectionComponent } from '../section/menu-section.component';
 })
 
 export class EditMenuComponent implements OnInit {
+  isAdmin = false;
   menu: any = {
     nombre: '',
     config: {
@@ -72,7 +74,8 @@ export class EditMenuComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private userService: UserService
   ) {}
 
 
@@ -83,6 +86,22 @@ export class EditMenuComponent implements OnInit {
         this.loadMenu();
         this.loadAllDishes();
         this.loadCategorias();
+      });
+    }
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        this.router.navigate(['/login']);
+        return;
+      }
+
+      this.userService.getUser().subscribe(user => {
+        if (user) {
+          this.user = user;
+          this.isAdmin = user.role === 'admin';
+        } else {
+          this.router.navigate(['/login']);
+        }
       });
     }
   }

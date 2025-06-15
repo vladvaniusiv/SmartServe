@@ -75,6 +75,7 @@ export class MenuSectionComponent implements OnInit, OnDestroy {
   hasActiveOrders: boolean = false;
   ratings: { [key: string]: number } = {};
   orderStatus: { [key: number]: any } = {};
+  isRefreshingStatus = false;
 
   ngOnInit() {
     this.sectionDishes = this.sectionDishes.map(dish => ({
@@ -322,6 +323,11 @@ checkOrderStatus() {
     return;
   }
 
+  this.isRefreshingStatus = true;
+
+  let requestsCompleted = 0;
+  const total = this.pedidoIds.length;
+
   this.pedidoIds.forEach(id => {
     const url = `https://pedidosmenu.loca.lt/api/pedidos/${id}`;
     
@@ -341,6 +347,8 @@ checkOrderStatus() {
           ...this.orderStatus,
           [id]: status
         };
+        requestsCompleted++;
+        if (requestsCompleted === total) this.isRefreshingStatus = false;
       },
       error: (error) => {
         if (error.status === 404) {
@@ -354,6 +362,8 @@ checkOrderStatus() {
             }
           };
         }
+        requestsCompleted++;
+        if (requestsCompleted === total) this.isRefreshingStatus = false;
       }
     });
   });

@@ -34,6 +34,7 @@ export class CreateDishesComponent {
   imagen: File | null = null;
   successMessage = '';
   errorMessage = '';
+  maxFileSize = 100 * 1024 * 1024;
 
   constructor(
     private http: HttpClient,
@@ -45,7 +46,14 @@ export class CreateDishesComponent {
   video: File | null = null;
 
   onVideoSelected(event: any) {
-    this.video = event.target.files[0];
+    const file = event.target.files[0];
+    if (file && file.size > this.maxFileSize) {
+      this.errorMessage = 'El video supera el tamaño máximo de 100MB.';
+      this.video = null;
+      return;
+    }
+    this.video = file;
+    this.errorMessage = '';
   }
 
   getCategorias() {
@@ -73,7 +81,14 @@ export class CreateDishesComponent {
 }
 
   onImageSelected(event: any) {
-    this.imagen = event.target.files[0];
+    const file = event.target.files[0];
+    if (file && file.size > this.maxFileSize) {
+      this.errorMessage = 'La imagen supera el tamaño máximo de 100MB.';
+      this.imagen = null;
+      return;
+    }
+    this.imagen = file;
+    this.errorMessage = '';
   }
 
   toggleServicio(servicio: string) {

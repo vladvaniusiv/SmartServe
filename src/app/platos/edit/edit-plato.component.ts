@@ -42,6 +42,7 @@ export class EditPlatoComponent implements OnInit {
   isLoading = false;
   eliminarImagen = false;
   eliminarVideo = false;
+  maxFileSize = 100 * 1024 * 1024;
 
   constructor(
     private http: HttpClient,
@@ -135,8 +136,15 @@ export class EditPlatoComponent implements OnInit {
   }
 
   onVideoSelected(event: any): void {
-    if (event.target.files && event.target.files.length > 0) {
-      this.nuevoVideo = event.target.files[0];
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > this.maxFileSize) {
+        this.errorMessage = `El video supera el tamaño máximo de ${this.maxFileSize / (1024 * 1024)}MB.`;
+        this.nuevoVideo = null;
+        return;
+      }
+      this.nuevoVideo = file;
+      this.errorMessage = '';
     }
   }
 
@@ -193,6 +201,11 @@ export class EditPlatoComponent implements OnInit {
     }
     if (this.dish.maridaje_recomendado) {
       formData.append('maridaje_recomendado', this.dish.maridaje_recomendado);
+    }
+    if (this.nuevoVideo && this.nuevoVideo.size > this.maxFileSize) {
+      this.errorMessage = `El video seleccionado supera los ${this.maxFileSize}MB permitidos.`;
+      this.isLoading = false;
+      return;
     }
     if (this.nuevoVideo) {
       formData.append('video_preparacion', this.nuevoVideo);

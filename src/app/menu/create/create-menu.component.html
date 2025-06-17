@@ -49,6 +49,27 @@
 
       <!-- Secciones del menú -->
       <div class="card mb-4">
+                <div class="m-3">
+            <label class="form-label">Secciones visibles</label>
+            <div class="d-flex flex-wrap gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="show-menu" [(ngModel)]="config.visibleSections.menu">
+                <label class="form-check-label" for="show-menu">Menú</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="show-carta" [(ngModel)]="config.visibleSections.carta">
+                <label class="form-check-label" for="show-carta">Carta</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="show-vino" [(ngModel)]="config.visibleSections.vino">
+                <label class="form-check-label" for="show-vino">Vinos</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="show-aperitivo" [(ngModel)]="config.visibleSections.aperitivo">
+                <label class="form-check-label" for="show-aperitivo">Aperitivos</label>
+              </div>
+            </div>
+          </div>
         <div class="card-header">
           <ul class="nav nav-tabs card-header-tabs">
             <li class="nav-item" *ngIf="config.visibleSections.menu">

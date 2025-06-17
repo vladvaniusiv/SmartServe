@@ -90,7 +90,10 @@
     border-radius: 10px;
     z-index: 1050;
     width: 90%;
+    height: 80%;
+    overflow:scroll;
     max-width: 400px;
+    text-transform: capitalize;
   }
 
 

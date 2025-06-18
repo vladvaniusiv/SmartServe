@@ -82,4 +82,7 @@ export class ListCategoriaComponent implements OnInit {
     if (!isPlatformBrowser(this.platformId)) return;
     this.router.navigate(['/categorias/editar', categoriaId]);
   }
+  goToCreateCategory(){
+    this.router.navigate(['/create-category']);
+  }
 }

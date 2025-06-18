@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { environment } from '../../../environments/environment.development';
 import { FormsModule } from '@angular/forms';
 import { TruncatePipe } from '../../pipes/truncate.pipe';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-platos',
@@ -22,7 +23,7 @@ export class ListPlatosComponent implements OnInit {
   successMessage = '';
   errorMessage = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private router: Router,private http: HttpClient) {}
 
   ngOnInit(): void {
     this.getPlatos();
@@ -131,5 +132,13 @@ export class ListPlatosComponent implements OnInit {
         setTimeout(() => this.errorMessage = '', 3000);
       }
     });
+  }
+
+    goToCreateDishes(){
+    this.router.navigate(['/create-dishes']);
+  }
+
+  goToCreateCategory(){
+    this.router.navigate(['/create-category']);
   }
 }

@@ -191,7 +191,7 @@ export class CreateDishesComponent {
           this.successMessage = 'Plato creado con éxito';
           this.errorMessage = '';
           this.resetForm();
-          setTimeout(() => this.router.navigate(['/platos']), 1500);
+          setTimeout(() => this.router.navigate(['/list-platos']), 1500);
         },
         error: (err) => {
           console.error('Error completo:', err);
